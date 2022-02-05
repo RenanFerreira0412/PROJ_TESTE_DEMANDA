@@ -14,5 +14,4 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TEST_PROJECT_DEMANDAS }}'
           projectId: test-project-demandas
-      env:
-        FIREBASE_CLI_PREVIEWS: hostingchannels
+
