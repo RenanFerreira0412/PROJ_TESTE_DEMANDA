@@ -28,11 +28,12 @@ class MyProfile extends StatelessWidget {
                   width: 300,
                 ),
               )
-          )
+          ),
+
+          Text(userDao.email())
         ],
       ),
     );
-    throw UnimplementedError();
   }
 
 }
