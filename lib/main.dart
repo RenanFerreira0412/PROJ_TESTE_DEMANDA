@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             debugPrint("You have an error!");
-            return const Text('Algo deu errado!');
+            return const Text('Algo não deu certo!');
           } else if (snapshot.hasData) {
             return Consumer<UserDao>(builder: (context, userDao, child) {
               if (userDao.isLoggedIn()) {
