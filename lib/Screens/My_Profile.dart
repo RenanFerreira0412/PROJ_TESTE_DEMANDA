@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
+import 'package:projflutterfirebase/Screens/userOptions.dart';
 import 'package:provider/provider.dart';
 
 class MyProfile extends StatelessWidget {
@@ -17,21 +18,26 @@ class MyProfile extends StatelessWidget {
           title: const Text('Meu Perfil'),
         centerTitle: true,
       ),
-      body: Stack(
-        alignment: Alignment.center,
+      body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Positioned(
-              child: CircleAvatar(
-                backgroundColor: Colors.grey[700],
-                child: Image.asset(
-                  userDao.photoURL(),
-                  width: 300,
-                ),
-              )
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                  child: CircleAvatar(
+                    backgroundColor: Colors.grey[700],
+                    child: Image.asset(
+                      userDao.photoURL(),
+                    ),
+                  )
+              ),
+            ],
           ),
 
-          Text(userDao.email())
-        ],
+          Options(Icons.email, 'Email', userDao.email(), () {debugPrint('user email');}, Theme.of(context).colorScheme.primary)
+
+        ]
       ),
     );
   }
