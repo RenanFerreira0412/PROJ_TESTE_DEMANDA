@@ -1,20 +1,14 @@
 name: Deploy to Firebase Hosting
-on: push
+'on':
+  push:
+    branches:
+      - master
 jobs:
-  hosting:
-    name: Deploy Website
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      # Checkout Repository
-      - uses: actions/checkout@v1
-
-      # Install Flutter command
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'dev'
-
       # Deploy Firebase Hosting
-      - name: Deploy Firebase Hosting
+      - uses: actions/checkout@v2
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
