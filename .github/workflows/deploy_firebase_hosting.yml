@@ -15,10 +15,11 @@ jobs:
 
       # Deploy Firebase Hosting
       - name: Deploy Firebase Hosting
-      - uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@master
         with:
-          args: deploy --only hosting:test-project-demandas
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_TOKEN }}'
+          projectId: test-project-demandas
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          PROJECT_PATH: ./
+          FIREBASE_CLI_PREVIEWS: hostingchannels
 
