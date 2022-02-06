@@ -35,7 +35,7 @@ class MyProfile extends StatelessWidget {
             ],
           ),
 
-          Options(Icons.email, 'Email', userDao.email(), () {debugPrint('user email');}, Theme.of(context).colorScheme.primary)
+          Options(Icons.email, 'Email', userDao.email(), () {debugPrint('user email');}, Colors.redAccent)
 
         ]
       ),
