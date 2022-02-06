@@ -15,7 +15,7 @@ jobs:
 
       # Deploy Firebase Hosting
       - name: Deploy Firebase Hosting
-        uses: w9jds/firebase-action@master
+      - uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting:test-project-demandas
         env:
