@@ -13,14 +13,6 @@ jobs:
         with:
           channel: 'dev'
 
-      # Build Website
-      - name: Build Website
-        run: |
-          flutter config --enable-web
-          flutter pub get
-          flutter build web --release
-        working-directory: ./
-
       # Deploy Firebase Hosting
       - name: Deploy Firebase Hosting
         uses: w9jds/firebase-action@master
