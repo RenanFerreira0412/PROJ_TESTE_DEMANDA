@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projflutterfirebase/Components/Editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:projflutterfirebase/Models/demanda.dart';
 import 'package:projflutterfirebase/Screens/lista.dart';
 import 'package:conditional_questions/conditional_questions.dart';
 
@@ -38,9 +37,8 @@ class EditarFormInfoState extends State<EditarFormInfo> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
 
-    //Replacing the spaces with the information from the card -> Retornando os valores para os campos de texto
+    //Retornando os valores para os campos de texto
     _controladorTitulo.text = widget.titulo;
     _controladorTempoNecessario.text = widget.tempo;
     _controladorResumo.text = widget.resumo;
@@ -100,8 +98,14 @@ class EditarFormInfoState extends State<EditarFormInfo> {
               },
             ),
           )
-
         ],
+        bottom: PreferredSize(
+            child: Container(
+              color: Colors.white,
+              height: 4.0,
+            ),
+            preferredSize: const Size.fromHeight(4.0)),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -142,18 +146,6 @@ class EditarFormInfoState extends State<EditarFormInfo> {
                     });
                     if(!_valida){
                       _criarDemanda(context);
-
-                      widget.updateDados
-                          .reference
-                          .update({
-                        'Titulo_proposta': _controladorTitulo.text,
-                        'Tempo_Necessario': _controladorTempoNecessario.text,
-                        'Resumo': _controladorResumo.text,
-                        'Objetivo': _controladorObjetivo.text,
-                        'Contrapartida': _controladorContrapartida.text,
-                        'Resutados_Esperados': _controladorResutadosEsperados.text
-                      }).then((value) => debugPrint("Sua proposta foi atualizada no banco de dados"))
-                          .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
                     }
                   },
                   child: const Text("SALVAR MUDANÇAS")
@@ -168,10 +160,21 @@ class EditarFormInfoState extends State<EditarFormInfo> {
 
   void _criarDemanda(BuildContext context) {
 
-    final demandaCriadaAtualizada = Demandas(_controladorTitulo.text, _controladorTempoNecessario.text, _controladorResumo.text, _controladorObjetivo.text,
-        _controladorContrapartida.text, _controladorResutadosEsperados.text);
+    //Atualiza as propostas já cadastradas pelo usuário
+    widget.updateDados
+        .reference
+        .update({
+      'Titulo_proposta': _controladorTitulo.text,
+      'Tempo_Necessario': _controladorTempoNecessario.text,
+      'Resumo': _controladorResumo.text,
+      'Objetivo': _controladorObjetivo.text,
+      'Contrapartida': _controladorContrapartida.text,
+      'Resutados_Esperados': _controladorResutadosEsperados.text
+    }).then((value) => debugPrint("Sua proposta foi atualizada no banco de dados"))
+        .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
 
-    Navigator.pop(context, demandaCriadaAtualizada);
+    //Retorna para a página com as demandas listadas
+    Navigator.pop(context);
 
     //SnackBar
     const SnackBar snackBar = SnackBar(content: Text("A demanda foi editada com sucesso! "));

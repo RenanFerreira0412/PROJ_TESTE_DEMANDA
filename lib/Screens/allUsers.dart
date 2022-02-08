@@ -1,5 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:projflutterfirebase/Screens/form.dart';
+import 'package:projflutterfirebase/Screens/lista.dart';
 import 'package:projflutterfirebase/Screens/userOptions.dart';
 
 
@@ -33,6 +35,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
         controller: pc,
         children: [
           FormDemanda(),
+          ListaDemanda(),
           MoreOptions(),
         ],
         onPageChanged: setPaginaAtual,
@@ -40,16 +43,45 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: paginaAtual,
+          unselectedIconTheme: const IconThemeData(color: Colors.white),
+          unselectedLabelStyle: const TextStyle(color: Colors.white),
+
           items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), label: 'Formulário'),
+              BottomNavigationBarItem(icon: Icon(Icons.assignment_rounded), label: 'Formulário'),
+              BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), label: 'Minhas propostas'),
               BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Mais')
           ],
           onTap: (pagina) {
           pc.animateToPage(pagina, duration: const Duration(milliseconds: 400), curve: Curves.ease);
     },
-        backgroundColor: Colors.grey[200],
+        backgroundColor: const Color.fromRGBO(217, 217, 217, 0.4),
+
       ),
     );
-    throw UnimplementedError();
   }
+}
+
+Widget BottomNavigationBarItemk(IconData icon, String label, Color color) {
+  return Container(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: [
+          Colors.green[900].withOpacity(0.3),
+          Colors.green.withOpacity(0.015),
+        ]
+      )
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          color: color,
+        ),
+
+        Text(label, style: TextStyle(color: color))
+
+      ],
+    ),
+  );
 }

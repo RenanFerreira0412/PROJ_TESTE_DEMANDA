@@ -31,8 +31,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: FlexColorScheme.light(scheme: FlexScheme.green).toTheme,
-      themeMode: ThemeMode.system,
+      darkTheme: FlexColorScheme.dark(scheme: FlexScheme.jungle).toTheme,
+      themeMode: ThemeMode.dark,
       home: FutureBuilder(
         future: _initialization,
         builder: (context, snapshot) {

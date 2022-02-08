@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Screens/EditarInfo.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-
-
+import 'package:provider/provider.dart';
 
 class ItemDemanda extends StatelessWidget {
-  final Stream<QuerySnapshot> propostasFeitas =
-  FirebaseFirestore.instance.collection('Demandas').snapshots();
-
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    final userDao = Provider.of<UserDao>(context, listen: false);
+
+    final Stream<QuerySnapshot> propostasFeitas =
+    FirebaseFirestore.instance.collection('Demandas').where('userID', isEqualTo: userDao.userId()).snapshots();
 
     return StreamBuilder<QuerySnapshot> (
       stream: propostasFeitas,
@@ -27,8 +27,8 @@ class ItemDemanda extends StatelessWidget {
           );
         }
         if(snapshot.connectionState == ConnectionState.waiting) {
-          return const Center (
-            child: SpinKitFadingCircle(color: Colors.green, size: 120),
+          return Center (
+            child: SpinKitFadingCircle(color: Colors.green[900], size: 120),
           );
         }
 
@@ -74,27 +74,22 @@ class ItemDemanda extends StatelessWidget {
                                   ],
                                 ),
                                 child: ListTile(
-                                    leading: const Icon(Icons.add_circle_outline),
-                                    title: Text(data.docs[index]['Titulo_proposta']),
-                                    subtitle: Text(data.docs[index]['Tempo_Necessario']),
+                                    leading: Icon(Icons.assignment_rounded, color: Colors.green[900]),
+                                    textColor: Colors.black,
+                                    title: Text(infoTitulo),
+                                    subtitle: Text(infoTempo, style: const TextStyle(color: Colors.black45)),
                                     trailing: SizedBox(
                                       width: 50,
                                       child: Row(
                                         children: <Widget>[
                                           IconButton (
-                                            icon: const Icon(Icons.edit, color: Colors.green, size: 32),
+                                            icon: Icon(Icons.edit, color: Colors.green[900], size: 32),
                                             tooltip: 'Editar proposta',
                                             onPressed: () {
 
-                                              final Future future =
                                               Navigator.push(context, MaterialPageRoute(builder: (context) {
                                                 return EditarFormInfo(infoTitulo, infoTempo, infoResumo, infoObjetivo, infoContrapartida, infoResutadosEsperados, updateDados);
                                               }));
-
-                                              future.then((demandaAtualizada) {
-                                                debugPrint("$demandaAtualizada");
-                                                debugPrint('A proposta foi alterada');
-                                              });
 
                                             },
                                           ),

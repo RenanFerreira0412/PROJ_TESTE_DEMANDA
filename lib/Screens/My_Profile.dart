@@ -17,6 +17,7 @@ class MyProfile extends StatelessWidget {
       appBar: AppBar(
           title: const Text('Meu Perfil'),
         centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

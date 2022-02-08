@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:projflutterfirebase/Screens/lista.dart';
-import 'package:projflutterfirebase/Widgets/widget.dart';
-import 'package:projflutterfirebase/models/demanda.dart';
+import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Components/Editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 class FormDemanda extends StatefulWidget {
 
@@ -46,13 +45,18 @@ class FormDemandaState extends State<FormDemanda>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    CollectionReference propostasFeitas = FirebaseFirestore.instance.collection('Demandas');
 
     return Scaffold(
       appBar: AppBar(
           title: const Text('Formulário de Cadastro'),
         centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        bottom: PreferredSize(
+            child: Container(
+              color: Colors.white,
+              height: 4.0,
+            ),
+            preferredSize: const Size.fromHeight(4.0)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -123,20 +127,6 @@ class FormDemandaState extends State<FormDemanda>{
                       //optionSelected.isEmpty ? _valida = true : _valida = false;
                     });
                     if(!_valida){
-
-                      //Adicionando um novo documento a nossa coleção -> Demandas
-                      propostasFeitas.add({
-                        'Titulo_proposta': _controladorTitulo.text,
-                        'Tempo_Necessario': _controladorTempoNecessario.text,
-                        'Resumo': _controladorResumo.text,
-                        'Objetivo': _controladorObjetivo.text,
-                        'Contrapartida': _controladorContrapartida.text,
-                        'Resutados_Esperados': _controladorResutadosEsperados.text,
-                        'Area_Tematica': optionSelected,
-                      })
-                          .then((value) => debugPrint("Sua proposta foi registrada no banco de dados"))
-                          .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
-
                       _criarDemanda(context);
                     }
 
@@ -152,6 +142,24 @@ class FormDemandaState extends State<FormDemanda>{
   }
 
   void _criarDemanda(BuildContext context) {
+    final userDao = Provider.of<UserDao>(context, listen: false);
+
+    CollectionReference propostasFeitas = FirebaseFirestore.instance.collection('Demandas');
+
+    //Adicionando um novo documento a nossa coleção -> Demandas
+    propostasFeitas.add({
+      'Titulo_proposta': _controladorTitulo.text,
+      'Tempo_Necessario': _controladorTempoNecessario.text,
+      'Resumo': _controladorResumo.text,
+      'Objetivo': _controladorObjetivo.text,
+      'Contrapartida': _controladorContrapartida.text,
+      'Resutados_Esperados': _controladorResutadosEsperados.text,
+      'Area_Tematica': optionSelected,
+      'userID': userDao.userId(),
+    })
+        .then((value) => debugPrint("Sua proposta foi registrada no banco de dados"))
+        .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
+
     //Limpando os campos após a criação da proposta
       _controladorTitulo.text = '';
       _controladorTempoNecessario.text = '';

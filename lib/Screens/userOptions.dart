@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Screens/My_Profile.dart';
-import 'package:projflutterfirebase/Screens/lista.dart';
 import 'package:provider/provider.dart';
 
 
@@ -25,6 +24,13 @@ class MoreOptions extends StatelessWidget {
           width: 240,
         ),
         centerTitle: true,
+        bottom: PreferredSize(
+            child: Container(
+              color: Colors.white,
+              height: 4.0,
+            ),
+            preferredSize: const Size.fromHeight(4.0)),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
 
       body: SingleChildScrollView(
@@ -57,18 +63,6 @@ class MoreOptions extends StatelessWidget {
 
                   Options(Icons.feedback_outlined , 'Retornos', 'Visualize atualizações sobre a sua demanda', () {
                     debugPrint("Página retorno");
-                  },
-                      Theme.of(context).colorScheme.primary
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Options(Icons.list , 'Minhas Demandas', 'Visualize suas demandas cadastradas', () {
-                    debugPrint("Página ListaDemandas");
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ListaDemanda();
-                    }));
-
                   },
                       Theme.of(context).colorScheme.primary
                   ),

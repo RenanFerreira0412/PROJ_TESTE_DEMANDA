@@ -10,12 +10,17 @@ class ListaDemanda extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Propostas criadas"),
         centerTitle: true,
-
+        bottom: PreferredSize(
+            child: Container(
+              color: Colors.white,
+              height: 4.0,
+            ),
+            preferredSize: const Size.fromHeight(4.0)),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
 
       body: ItemDemanda(),
     );
-    throw UnimplementedError();
   }
 }
 
