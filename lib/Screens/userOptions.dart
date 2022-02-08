@@ -30,7 +30,7 @@ class MoreOptions extends StatelessWidget {
               height: 4.0,
             ),
             preferredSize: const Size.fromHeight(4.0)),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.green[900],
       ),
 
       body: SingleChildScrollView(
@@ -56,7 +56,7 @@ class MoreOptions extends StatelessWidget {
                       return MyProfile();
                     }));
                   },
-                      Theme.of(context).colorScheme.primary
+                      Colors.green[900]
                   ),
 
                   const SizedBox(height: 10),
@@ -64,7 +64,7 @@ class MoreOptions extends StatelessWidget {
                   Options(Icons.feedback_outlined , 'Retornos', 'Visualize atualizações sobre a sua demanda', () {
                     debugPrint("Página retorno");
                   },
-                      Theme.of(context).colorScheme.primary
+                      Colors.green[900]
                   ),
 
                   const SizedBox(height: 10),

@@ -105,7 +105,7 @@ class EditarFormInfoState extends State<EditarFormInfo> {
               height: 4.0,
             ),
             preferredSize: const Size.fromHeight(4.0)),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.green[900],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

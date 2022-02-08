@@ -28,9 +28,12 @@ class MyApp extends StatelessWidget {
 
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: FlexColorScheme.light(scheme: FlexScheme.red).toTheme,
       darkTheme: FlexColorScheme.dark(scheme: FlexScheme.jungle).toTheme,
       themeMode: ThemeMode.dark,
       home: FutureBuilder(

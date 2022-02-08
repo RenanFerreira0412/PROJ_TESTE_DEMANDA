@@ -44,17 +44,22 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: paginaAtual,
           unselectedIconTheme: const IconThemeData(color: Colors.white),
-          unselectedLabelStyle: const TextStyle(color: Colors.white),
+          unselectedItemColor:  Colors.white,
+          selectedIconTheme: IconThemeData(color: Colors.green[900], size: 30),
+          selectedItemColor: Colors.green[900],
+
+          type: BottomNavigationBarType.fixed,
+          selectedFontSize: 15,
 
           items: const [
               BottomNavigationBarItem(icon: Icon(Icons.assignment_rounded), label: 'Formulário'),
               BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), label: 'Minhas propostas'),
-              BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Mais')
+              BottomNavigationBarItem(icon: Icon(Icons.menu_rounded), label: 'Mais'),
           ],
           onTap: (pagina) {
           pc.animateToPage(pagina, duration: const Duration(milliseconds: 400), curve: Curves.ease);
     },
-        backgroundColor: const Color.fromRGBO(217, 217, 217, 0.4),
+        backgroundColor: const Color.fromRGBO(64, 64, 64, 0.4),
 
       ),
     );

@@ -72,6 +72,7 @@ class _LoginState extends State<Login> {
           toolbarHeight: 150,
           title: AppBarLogo(styleTextTitle),
           centerTitle: true,
+          backgroundColor: Colors.green[900],
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),

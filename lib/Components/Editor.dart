@@ -126,6 +126,7 @@ class EditorLogin extends StatelessWidget {
           controller: controlador,
           style: const TextStyle(
             fontSize: 18.0,
+            color: Colors.black
           ),
           decoration: InputDecoration(
             //labelText: rotulo,

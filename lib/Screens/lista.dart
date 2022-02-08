@@ -16,7 +16,7 @@ class ListaDemanda extends StatelessWidget {
               height: 4.0,
             ),
             preferredSize: const Size.fromHeight(4.0)),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.green[900],
       ),
 
       body: ItemDemanda(),
