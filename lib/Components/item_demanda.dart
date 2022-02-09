@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Screens/EditarInfo.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:projflutterfirebase/Screens/form.dart';
 import 'package:provider/provider.dart';
 
 class ItemDemanda extends StatelessWidget {
@@ -43,6 +44,8 @@ class ItemDemanda extends StatelessWidget {
             child: DottedBorder(
               borderType: BorderType.RRect,
               radius: const Radius.circular(12),
+              color: const Color.fromRGBO(125, 155, 118, 0.6),
+              dashPattern: const [10, 5],
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
                 child: Container(
@@ -62,6 +65,8 @@ class ItemDemanda extends StatelessWidget {
                       ElevatedButton(
                           onPressed: () {
                             debugPrint('Navegou para o formulário');
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => FormDemanda(),
+                            ));
                           },
                           child: const Text('Cadastrar proposta')
                       )

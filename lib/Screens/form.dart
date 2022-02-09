@@ -39,6 +39,8 @@ class FormDemandaState extends State<FormDemanda>{
 
   final style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
+  final styleText = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
+
   String hintText = 'Selecione a área temática';
 
   bool _valida = false;
@@ -109,6 +111,20 @@ class FormDemandaState extends State<FormDemanda>{
                     }).toList(),
                     onChanged: (value) => setState(() => optionSelected = value),
                   ),
+
+                  const SizedBox(height: 30),
+
+                  CampoSelecaoArquivos(
+                      Icons.cloud_upload_rounded,
+                      'Faça o upload de arquivos ',
+                      'aqui',
+                          () {
+                        debugPrint('selecionei um arquivo');
+                          },
+                      styleText
+                  )
+
+
                 ],
               ),
             ),
