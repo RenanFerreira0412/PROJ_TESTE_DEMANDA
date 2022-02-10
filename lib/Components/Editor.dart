@@ -1,5 +1,4 @@
 import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -31,6 +30,7 @@ class Editor extends StatelessWidget {
             helperText: dica,
             errorText: valida ? 'Campo obrigatório!' : null,
             border: const OutlineInputBorder(),
+            fillColor: const Color.fromRGBO(64, 64, 64, 0.4)
           ),
         )
     );
@@ -41,7 +41,7 @@ class EditorDropdownButton extends StatefulWidget{
   final TextStyle style;
   String optionSelected;
 
-  EditorDropdownButton(this.style, this.optionSelected);
+  EditorDropdownButton(this.style, this.optionSelected, {Key key}) : super(key: key);
 
   @override
   State<EditorDropdownButton> createState() => _EditorDropdownButtonState();
@@ -78,11 +78,11 @@ class _EditorDropdownButtonState extends State<EditorDropdownButton> {
           const SizedBox(height: 10),
 
           DropdownButtonFormField(
-
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               helperText: 'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
               hintText: 'Selecione a área temática',
+              fillColor: Color.fromRGBO(64, 64, 64, 0.4),
               //errorText: widget.valida ? 'Campo obrigatório!' : null,
             ),
             items: buttonOptions.map((options) {
@@ -128,7 +128,7 @@ class EditorLogin extends StatelessWidget {
           controller: controlador,
           style: const TextStyle(
             fontSize: 18.0,
-            color: Colors.black
+            color: Colors.black,
           ),
           decoration: InputDecoration(
             //labelText: rotulo,
@@ -167,6 +167,7 @@ class CampoSelecaoArquivos extends StatelessWidget{
           padding: const EdgeInsets.only(top: 20),
           height: 150,
           width: double.infinity,
+          color: const Color.fromRGBO(64, 64, 64, 0.4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -183,7 +184,7 @@ class CampoSelecaoArquivos extends StatelessWidget{
                     onTap: setUploadAction,
                     child: Text(
                         mainText,
-                        style: GoogleFonts.cabin(textStyle: styleText, color: Colors.green[900])),
+                        style: GoogleFonts.cabin(textStyle: styleText, color: Theme.of(context).colorScheme.primary)),
                   )
                 ],
               )

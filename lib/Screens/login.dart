@@ -205,7 +205,7 @@ class CadastrarConta extends StatelessWidget{
               onTap: setFormAction,
               child: Text(
                   secondTextNavigation,
-                  style: GoogleFonts.cabin(textStyle: styleText, color: Colors.black)),
+                  style: GoogleFonts.cabin(textStyle: styleText, color: Colors.white)),
             )
 
           ]),
@@ -222,7 +222,6 @@ class ContaAdministrador extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -239,7 +238,7 @@ class ContaAdministrador extends StatelessWidget {
 
             child: Text(
                 ' administrador',
-                style: GoogleFonts.cabin(textStyle: styleText, color: Colors.black)),
+                style: GoogleFonts.cabin(textStyle: styleText, color: Colors.white)),
           )
 
         ]);

@@ -43,10 +43,8 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: paginaAtual,
-          unselectedIconTheme: const IconThemeData(color: Colors.white),
-          unselectedItemColor:  Colors.white,
-          selectedIconTheme: IconThemeData(color: Colors.green[900], size: 30),
-          selectedItemColor: Colors.green[900],
+
+          selectedIconTheme: const IconThemeData( size: 30),
 
           type: BottomNavigationBarType.fixed,
           selectedFontSize: 15,

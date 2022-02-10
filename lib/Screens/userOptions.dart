@@ -56,7 +56,7 @@ class MoreOptions extends StatelessWidget {
                       return MyProfile();
                     }));
                   },
-                      Colors.green[900]
+                      Theme.of(context).colorScheme.primary
                   ),
 
                   const SizedBox(height: 10),
@@ -64,7 +64,7 @@ class MoreOptions extends StatelessWidget {
                   Options(Icons.feedback_outlined , 'Retornos', 'Visualize atualizações sobre a sua demanda', () {
                     debugPrint("Página retorno");
                   },
-                      Colors.green[900]
+                      Theme.of(context).colorScheme.primary
                   ),
 
                   const SizedBox(height: 10),

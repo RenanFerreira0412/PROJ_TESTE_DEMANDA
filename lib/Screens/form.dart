@@ -117,7 +117,7 @@ class FormDemandaState extends State<FormDemanda>{
                   CampoSelecaoArquivos(
                       Icons.cloud_upload_rounded,
                       'Faça o upload de arquivos ',
-                      'aqui',
+                      'AQUI',
                           () {
                         debugPrint('selecionei um arquivo');
                           },

@@ -68,7 +68,7 @@ class Divisor extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               "Ou",
-              style: GoogleFonts.cabin(textStyle: styleText, color: Colors.black),
+              style: GoogleFonts.cabin(textStyle: styleText, color: Colors.white),
             ),
           ),
           _buildDivisor(),
