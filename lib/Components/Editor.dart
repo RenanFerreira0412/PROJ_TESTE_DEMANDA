@@ -151,8 +151,10 @@ class CampoSelecaoArquivos extends StatelessWidget{
   final String mainText;
   final Function setUploadAction;
   final TextStyle styleText;
+  final TextStyle styleTextFile;
+  final String fileName;
 
-  const CampoSelecaoArquivos(this.uploadIcone, this.subText, this.mainText, this.setUploadAction, this.styleText);
+  const CampoSelecaoArquivos(this.uploadIcone, this.subText, this.mainText, this.setUploadAction, this.styleText, this.fileName, this.styleTextFile);
 
   @override
   Widget build(BuildContext context) {
@@ -187,6 +189,11 @@ class CampoSelecaoArquivos extends StatelessWidget{
                         style: GoogleFonts.cabin(textStyle: styleText, color: Theme.of(context).colorScheme.primary)),
                   )
                 ],
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                  child: Text(fileName, style: GoogleFonts.cabin(textStyle: styleTextFile))
               )
             ],
           ),

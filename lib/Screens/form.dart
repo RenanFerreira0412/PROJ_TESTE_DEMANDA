@@ -1,9 +1,15 @@
+import 'dart:io';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path/path.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Components/Editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class FormDemanda extends StatefulWidget {
 
@@ -24,6 +30,9 @@ class FormDemandaState extends State<FormDemanda>{
   final TextEditingController _controladorContrapartida = TextEditingController();
   final TextEditingController _controladorResutadosEsperados = TextEditingController();
 
+  PlatformFile name;
+  File file;
+
   final List<String> buttonOptions = [
     'Comunicação',
     'Cultura',
@@ -38,6 +47,8 @@ class FormDemandaState extends State<FormDemanda>{
   String optionSelected;
 
   final style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
+
+  final styleTextFile = const TextStyle(fontSize: 12, fontWeight: FontWeight.w200);
 
   final styleText = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
@@ -119,9 +130,11 @@ class FormDemandaState extends State<FormDemanda>{
                       'Faça o upload de arquivos ',
                       'AQUI',
                           () {
-                        debugPrint('selecionei um arquivo');
+                        selectedFile(name, file);
                           },
-                      styleText
+                      styleText,
+                      FILE(),
+                      styleTextFile
                   )
 
 
@@ -188,4 +201,49 @@ class FormDemandaState extends State<FormDemanda>{
     const SnackBar snackBar = SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+
+  Future selectedFile(PlatformFile fileNameWeb, File fileNameNotWeb) async {
+    debugPrint('selecionei um arquivo');
+
+    FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+    //Caso o usuário tenha selecionado um arquivo
+    if (result != null) {
+      if(kIsWeb) { // Caso o usuário esteja acessando pela web
+        PlatformFile file = result.files.first;
+
+        print(file.name);
+        print(file.bytes);
+        print(file.size);
+        print(file.extension);
+
+        //Pegando o nome do arquivo
+        final fileName = file.name;
+
+        setState(() => name = PlatformFile(name: fileName, size: file.size));
+      } else {
+        final path = result.files.single.path;
+
+        setState(() => file = File(path));
+        debugPrint('O arquivo selecionado é : $path');
+      }
+
+    } else { //Caso o usuário tenha cancelado a seleção de um arquivo
+      Fluttertoast.showToast(msg: 'Nenhum arquivo foi selecionado, tente novamente!', gravity: ToastGravity.SNACKBAR);
+    }
+
+
+  }
+
+  FILE()  {
+    if(kIsWeb){
+      //Pega o nome do arquivo selecionado
+      return name != null ? basename(name.name) : 'Sem arquivos selecionados ...';
+    } else {
+      //Pega o nome do arquivo selecionado
+      return file != null  ? basename(file.path)  : 'Sem arquivos selecionados ...';
+    }
+  }
+
 }
+
