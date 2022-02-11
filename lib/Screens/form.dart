@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path/path.dart';
 import 'package:file_picker/file_picker.dart';
@@ -31,7 +33,8 @@ class FormDemandaState extends State<FormDemanda>{
   final TextEditingController _controladorResutadosEsperados = TextEditingController();
 
   PlatformFile name;
-  File file;
+  File filePath;
+  Uint8List fileBytes;
 
   final List<String> buttonOptions = [
     'Comunicação',
@@ -58,6 +61,8 @@ class FormDemandaState extends State<FormDemanda>{
 
   @override
   Widget build(BuildContext context) {
+
+    final fileName = name != null ? basename(name.name) : 'Sem arquivos selecionados ...';
 
     return Scaffold(
       appBar: AppBar(
@@ -130,10 +135,10 @@ class FormDemandaState extends State<FormDemanda>{
                       'Faça o upload de arquivos ',
                       'AQUI',
                           () {
-                        selectedFile(name, file);
+                        selectedFile();
                           },
                       styleText,
-                      FILE(),
+                      fileName,
                       styleTextFile
                   )
 
@@ -197,35 +202,34 @@ class FormDemandaState extends State<FormDemanda>{
       _controladorContrapartida.text = '';
       _controladorResutadosEsperados.text = '';
 
+      //Faz o upload do arquivo selecionado para o Firebase
+    UploadFile;
+
     //SnackBar
     const SnackBar snackBar = SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  Future selectedFile(PlatformFile fileNameWeb, File fileNameNotWeb) async {
-    debugPrint('selecionei um arquivo');
+  Future selectedFile() async {
 
     FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false);
 
     //Caso o usuário tenha selecionado um arquivo
-    if (result != null) {
-      if(kIsWeb) { // Caso o usuário esteja acessando pela web
-        PlatformFile file = result.files.first;
+    if (result != null && result.files.isNotEmpty) {
+      //Pega o nome o arquivo selecionado
+      final file = result.files.first;
 
-        print(file.name);
-        print(file.bytes);
-        print(file.size);
-        print(file.extension);
+      //Uint8List fileBytes = result.files.first.bytes;
 
-        //Pegando o nome do arquivo
-        final fileName = file.name;
+      //filePath = File(file.path);
 
-        setState(() => name = PlatformFile(name: fileName, size: file.size));
+
+      setState(() => name = PlatformFile(name: file.name, size: file.size));
+
+      if(kIsWeb){
+        debugPrint('Estou na web');
       } else {
-        final path = result.files.single.path;
-
-        setState(() => file = File(path));
-        debugPrint('O arquivo selecionado é : $path');
+        debugPrint('Não estou na web');
       }
 
     } else { //Caso o usuário tenha cancelado a seleção de um arquivo
@@ -235,14 +239,20 @@ class FormDemandaState extends State<FormDemanda>{
 
   }
 
-  FILE()  {
-    if(kIsWeb){
-      //Pega o nome do arquivo selecionado
-      return name != null ? basename(name.name) : 'Sem arquivos selecionados ...';
-    } else {
-      //Pega o nome do arquivo selecionado
-      return file != null  ? basename(file.path)  : 'Sem arquivos selecionados ...';
-    }
+ Future UploadFile() async {
+   if (fileBytes != null) {
+   if (kIsWeb) {
+     // Upload file
+     await FirebaseStorage.instance.ref('files/$name').putData(fileBytes);
+
+   } else {
+     final fileName = basename(filePath.path);
+
+     // Upload file
+     await FirebaseStorage.instance.ref('files/$fileName').putFile(filePath);
+
+   }
+ }
   }
 
 }
