@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:projflutterfirebase/Screens/Main_page.dart';
 import 'package:projflutterfirebase/Screens/allUsers.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
-import 'package:projflutterfirebase/Screens/login.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
               if (userDao.isLoggedIn()) {
                 return AllUsersHomePage();
               } else {
-                return const Login();
+                return const LoginOptions();
               }
             });
           } else {

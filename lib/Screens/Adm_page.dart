@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projflutterfirebase/Components/Editor.dart';
-import 'package:projflutterfirebase/Widgets/widget.dart';
 
-class AdmApp extends StatefulWidget {
-  const AdmApp({Key key}) : super(key: key);
+class AdmPage extends StatefulWidget {
+  const AdmPage({Key key}) : super(key: key);
 
   @override
-  State<AdmApp> createState() => _AdmAppState();
+  State<AdmPage> createState() => _AdmPageState();
 }
 
-class _AdmAppState extends State<AdmApp> {
+class _AdmPageState extends State<AdmPage> {
   final _emailController = TextEditingController();
 
   final _passwordController = TextEditingController();
@@ -23,12 +22,9 @@ class _AdmAppState extends State<AdmApp> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
         appBar: AppBar(
-          toolbarHeight: 150,
-          title: AppBarLogo(styleTextTitle),
-          centerTitle: true,
+          backgroundColor: const Color.fromRGBO(64, 64, 64, 0.4),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -45,11 +41,11 @@ class _AdmAppState extends State<AdmApp> {
               ),
 
               //We are calling the EditorLogin to give our password and email
-              EditorLogin(_emailController, 'Email', 'Email', const Icon(Icons.email_outlined), _valida, 25, false),
+              EditorAuth(_emailController, 'Email', 'Email', const Icon(Icons.email_outlined), _valida, 25, false),
 
               const SizedBox(height: 10),
 
-              EditorLogin(_passwordController, 'Senha','Senha', const Icon(Icons.lock_outline), _valida, 10, true),
+              EditorAuth(_passwordController, 'Senha','Senha', const Icon(Icons.lock_outline), _valida, 10, true),
 
               const SizedBox(height: 10),
 
@@ -70,7 +66,7 @@ class _AdmAppState extends State<AdmApp> {
                   child: Text("ENTRAR", style: GoogleFonts.roboto(textStyle: styleText)),
                   style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(29),
+                        borderRadius: BorderRadius.circular(5),
                       )
                   ),
                 ),
