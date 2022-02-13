@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projflutterfirebase/Screens/login.dart';
@@ -225,16 +223,15 @@ class Buttons extends StatelessWidget {
   final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
 
   final Function press;
-
   final String text;
-
   final Color color;
-
   final Color letterColor;
-
+  final Color colorIcon;
   final Color borderColor;
+  final double width;
+  final IconData icon;
 
-  Buttons(this.press, this.text, this.color, this.letterColor, this.borderColor);
+  Buttons(this.press, this.text, this.color, this.letterColor, this.borderColor, this.width, this.icon, this.colorIcon);
 
   @override
   Widget build(BuildContext context) {
@@ -242,14 +239,19 @@ class Buttons extends StatelessWidget {
     return Container(
       height: 60,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 45),
-      child: ElevatedButton(
+      padding: const EdgeInsets.symmetric(horizontal: 60),
+      child: ElevatedButton.icon(
         onPressed: press,
-        child: Text(text, style: GoogleFonts.roboto(textStyle: styleText, color: letterColor)),
+        icon: Icon(
+          icon,
+          color: colorIcon,
+        ),
+        label: Text(text, style: GoogleFonts.roboto(textStyle: styleText, color: letterColor)),
         style: ElevatedButton.styleFrom(
           primary: color,
             side: BorderSide(
             color: borderColor,
+              width: width,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(29),

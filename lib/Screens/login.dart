@@ -1,10 +1,130 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projflutterfirebase/Components/Editor.dart';
-import 'package:projflutterfirebase/Screens/tela_Adm.dart';
 import 'package:projflutterfirebase/Widgets/widget.dart';
 import 'package:provider/provider.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
+
+class LoginOptions extends StatefulWidget {
+  const LoginOptions({Key key}) : super(key: key);
+
+  @override
+  _LoginOptionsState createState() => _LoginOptionsState();
+}
+
+class _LoginOptionsState extends State<LoginOptions> {
+  final styleTextLogo = const TextStyle(fontSize: 50, fontWeight: FontWeight.bold);
+  final styleTextTitle = const TextStyle(fontSize: 20);
+  final optionsText = const TextStyle(fontSize: 20);
+
+  bool onlyEmail = true;
+  Widget element;
+  String title = 'Mais opções';
+
+  @override
+  void initState() {
+    super.initState();
+    setWidgetAction(true);
+  }
+
+  setWidgetAction(bool acao){
+    setState(() {
+      onlyEmail = acao;
+      if(onlyEmail) {
+        element = Text(title, style: GoogleFonts.cabin(textStyle: optionsText));
+      } else {
+        element = SocialMediaButtons();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                //Navegar para a tela de Login
+              },
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Text('Login', style: GoogleFonts.cabin(textStyle: styleTextTitle))
+                ),
+              ),
+            ),
+
+            Text('Logo' ,style: GoogleFonts.cabin(textStyle: styleTextLogo)),
+
+            Container(
+              color: const Color.fromRGBO(64, 64, 64, 0.4),
+              padding: const EdgeInsets.only(top: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+
+                  Buttons(
+                          () {},
+                      'Entrar com email',
+                      Colors.white,
+                      Colors.black,
+                      Colors.white,
+                    4,
+                    Icons.email,
+                      Theme.of(context).colorScheme.primary
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Buttons(
+                          () {},
+                      'Administrador',
+                      const Color.fromRGBO(64, 64, 64, 0.4),
+                      Colors.white,
+                      const Color.fromRGBO(125, 155, 118, 0.6),
+                    4,
+                    Icons.person,
+                      Theme.of(context).colorScheme.primary
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  GestureDetector(
+                    onTap: (){
+                      setWidgetAction(!onlyEmail);
+                      },
+                    child: element,
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+
+Widget SocialMediaButtons() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Buttons(() {}, 'Google', Colors.white, Colors.black, Colors.white, 1, Icons.assessment_rounded, Colors.orange),
+
+      const SizedBox(height: 20),
+
+      Buttons(() {}, 'facebook', const Color.fromRGBO(26, 71, 137, 0.5), Colors.white, const Color.fromRGBO(26, 71, 137, 0.5), 1, Icons.facebook, Colors.white),
+    ],
+  );
+}
 
 
 class Login extends StatefulWidget {
@@ -122,7 +242,7 @@ class _LoginState extends State<Login> {
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(29),
-                    )
+                    ),
                   ),
               ),
               ),
@@ -232,7 +352,7 @@ class ContaAdministrador extends StatelessWidget {
           GestureDetector(
             onTap: () {
               debugPrint('Página de login do administrador');
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const AdmApp(),
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginOptions(),
               ));
             },
 
