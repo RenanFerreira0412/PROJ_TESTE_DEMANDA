@@ -71,74 +71,71 @@ class AppBarLogoUser extends StatelessWidget {
 }
 
 
-
-class Buttons extends StatelessWidget {
-
+class Divisor extends StatelessWidget {
   final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
-
-  final Function press;
-  final String text;
-  final Color color;
-  final Color letterColor;
-  final Color colorIcon;
-  final Color borderColor;
-  final double width;
-  final IconData icon;
-
-  Buttons(this.press, this.text, this.color, this.letterColor, this.borderColor, this.width, this.icon, this.colorIcon);
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Container(
-      height: 60,
+    // Size size = MediaQuery.of(context).size;
+
+    return SizedBox(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 60),
-      child: ElevatedButton.icon(
-        onPressed: press,
-        icon: Icon(
-          icon,
-          color: colorIcon,
-        ),
-        label: Text(text, style: GoogleFonts.roboto(textStyle: styleText, color: letterColor)),
-        style: ElevatedButton.styleFrom(
-          primary: color,
-            side: BorderSide(
-            color: borderColor,
-              width: width,
+      child: Row(
+        children: <Widget>[
+          _buildDivisor(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              "Ou",
+              style: GoogleFonts.cabin(textStyle: styleText, color: Colors.white),
             ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(29),
-            )
-        ),
+          ),
+          _buildDivisor(),
+        ],
       ),
     );
   }
 
+  Expanded _buildDivisor() {
+    return const Expanded(
+        child: Divider(
+          color: Colors.grey,
+          height: 1.5,
+        )
+    );
+  }
 }
 
-class ButtonsMedia extends StatelessWidget {
 
-  final styleText = const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
 
+
+class IconesMedia extends StatelessWidget {
+  final String imgMedia;
   final Function press;
   final String text;
-  final Color color;
-  final Color letterColor;
-  final String imgMedia;
+  final double paddingRight;
+  final double paddingLight;
 
-
-  const ButtonsMedia(this.press, this.text, this.color, this.letterColor, this.imgMedia);
+  const IconesMedia(this.imgMedia, this.press, this.text, this.paddingRight, this.paddingLight);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 60,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 60),
-      child: ElevatedButton(
-        onPressed: press,
-        child:  Row(
+    Size size = MediaQuery.of(context).size;
+
+    return GestureDetector(
+      onTap: press,
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        width: size.width * 0.8,
+        decoration: BoxDecoration(
+          border: Border.all(
+              width: 1,
+              color: Colors.grey
+          ),
+          borderRadius: BorderRadius.circular(30),
+          shape: BoxShape.rectangle,
+        ),
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
@@ -147,14 +144,11 @@ class ButtonsMedia extends StatelessWidget {
               height: 30,
             ),
 
-            Text(text, style: GoogleFonts.roboto(textStyle: styleText, color: letterColor)),
+            Padding(
+              padding: EdgeInsets.only(right: paddingRight, left: paddingLight),
+              child: Text(text),
+            ),
           ],
-        ),
-        style: ElevatedButton.styleFrom(
-            primary: color,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(29),
-            )
         ),
       ),
     );
