@@ -5,6 +5,7 @@ import 'package:projflutterfirebase/Widgets/widget.dart';
 import 'package:provider/provider.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Screens/Adm_page.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 
 class Login extends StatefulWidget {
@@ -92,9 +93,12 @@ class _LoginState extends State<Login> {
               ),
 
 
-              Padding(
-                padding: !isLogin ? const EdgeInsets.only(top: 20) : const EdgeInsets.only(top: 0),
-                  child: Text(!isLogin ? welcomeText : '')
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: !isLogin ? const EdgeInsets.only(top: 20) : const EdgeInsets.only(top: 0),
+                    child: Text(!isLogin ? welcomeText : '')
+                ),
               ),
 
               Align(
@@ -174,32 +178,31 @@ class _LoginState extends State<Login> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    IconesMedia(
-                        'assets/image/logo_google.png',
-                            () {
-                          debugPrint('Você logou com o google');
-
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: SignInButton(
+                        Buttons.Google,
+                        text: "Sign up with Google",
+                        onPressed: () {
                           userDao.signInWithGoogle();
                         },
-                        'Cadastre-se com o Google',
-                        18,
-                        5
+                      ),
                     ),
 
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: IconesMedia(
-                          'assets/image/logo_facebook.png',
-                              () {
-                            debugPrint('Você logou com o facebook');
+                    const SizedBox(height: 20),
 
-                            userDao.signInWithFacebook();
-                          },
-                          'Cadastre-se com o Facebook',
-                          0,
-                          5
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: SignInButton(
+                        Buttons.FacebookNew,
+                        text: "Sign up with facebook",
+                        onPressed: () {
+                          userDao.signInWithFacebook();
+                        },
                       ),
-                    )
+                    ),
                   ],
                 ),
               )
