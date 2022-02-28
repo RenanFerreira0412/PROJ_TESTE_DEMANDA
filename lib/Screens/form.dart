@@ -12,43 +12,33 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class FormDemanda extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return FormDemandaState();
   }
-
 }
 
-class FormDemandaState extends State<FormDemanda>{
-
+class FormDemandaState extends State<FormDemanda> {
   final TextEditingController _controladorTitulo = TextEditingController();
-  final TextEditingController _controladorTempoNecessario = TextEditingController();
+  final TextEditingController _controladorTempoNecessario =
+      TextEditingController();
   final TextEditingController _controladorResumo = TextEditingController();
   final TextEditingController _controladorObjetivo = TextEditingController();
-  final TextEditingController _controladorContrapartida = TextEditingController();
-  final TextEditingController _controladorResutadosEsperados = TextEditingController();
+  final TextEditingController _controladorContrapartida =
+      TextEditingController();
+  final TextEditingController _controladorResutadosEsperados =
+      TextEditingController();
 
   FilePickerResult result;
   PlatformFile name;
-
-  final List<String> buttonOptions = [
-    'Comunicação',
-    'Cultura',
-    'Direitos Humanos e Justiça',
-    'Educação',
-    'Meio Ambiente',
-    'Saúde',
-    'Tecnologia e Produção',
-    ' Trabalho'
-  ];
 
   String optionSelected;
 
   final style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
-  final styleTextFile = const TextStyle(fontSize: 12, fontWeight: FontWeight.w200);
+  final styleTextFile =
+      const TextStyle(fontSize: 12, fontWeight: FontWeight.w200);
 
   final styleText = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
@@ -56,16 +46,16 @@ class FormDemandaState extends State<FormDemanda>{
 
   bool _valida = false;
 
+  String selectedCurrency;
+
   @override
   Widget build(BuildContext context) {
-
-    final fileName = name != null ? basename(name.name) : 'Sem arquivos selecionados ...';
-
-    final userDao = Provider.of<UserDao>(context, listen: false);
+    final fileName =
+        name != null ? basename(name.name) : 'Sem arquivos selecionados ...';
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Formulário de Cadastro'),
+        title: const Text('Formulário de Cadastro'),
         centerTitle: true,
         backgroundColor: Colors.green[900],
         bottom: PreferredSize(
@@ -80,23 +70,38 @@ class FormDemandaState extends State<FormDemanda>{
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
-            Editor(_controladorTitulo, "Título da proposta", "Título da Proposta", 1, _valida, 150),
-
-            Editor(_controladorTempoNecessario, "Informe o tempo necessário", "Número de meses para ser realizada", 1, _valida, 150),
-
-            Editor(_controladorResumo, "Faça uma breve descrição da sua proposta",
-                "Explique da melhor forma que conseguir sobre o que se trata a proposta", 5, _valida, 600),
-
-            Editor(_controladorObjetivo, "Descreva os objetivos que você espera serem atendidos",
-                "Coloque em forma de tópicos os objetivos da proposta", 5, _valida, 600),
-
-            Editor(_controladorContrapartida, "Quais recursos a equipe dispõe para a execução da proposta?",
-                "Descreva quais recursos estão disponíveis para a execução da proposta, financeiros, humanos, estrutura, etc", 5, _valida, 600),
-
-            Editor(_controladorResutadosEsperados, "Quais os resultados esperados?  ",
-                "Descreva os resultados esperados", 5, false, 600),
-
+            Editor(_controladorTitulo, "Título da proposta",
+                "Título da Proposta", 1, _valida, 150),
+            Editor(_controladorTempoNecessario, "Informe o tempo necessário",
+                "Número de meses para ser realizada", 1, _valida, 150),
+            Editor(
+                _controladorResumo,
+                "Faça uma breve descrição da sua proposta",
+                "Explique da melhor forma que conseguir sobre o que se trata a proposta",
+                5,
+                _valida,
+                600),
+            Editor(
+                _controladorObjetivo,
+                "Descreva os objetivos que você espera serem atendidos",
+                "Coloque em forma de tópicos os objetivos da proposta",
+                5,
+                _valida,
+                600),
+            Editor(
+                _controladorContrapartida,
+                "Quais recursos a equipe dispõe para a execução da proposta?",
+                "Descreva quais recursos estão disponíveis para a execução da proposta, financeiros, humanos, estrutura, etc",
+                5,
+                _valida,
+                600),
+            Editor(
+                _controladorResutadosEsperados,
+                "Quais os resultados esperados?  ",
+                "Descreva os resultados esperados",
+                5,
+                false,
+                600),
             const SizedBox(height: 10),
 
             Container(
@@ -104,156 +109,182 @@ class FormDemandaState extends State<FormDemanda>{
               child: Column(
                 children: [
                   Align(
-              alignment: Alignment.centerLeft,
-                    child: Text('Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
-                        style: GoogleFonts.cabin(textStyle: style),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
+                      style: GoogleFonts.cabin(textStyle: style),
                     ),
                   ),
 
                   const SizedBox(height: 10),
 
-                  DropdownButtonFormField(
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      helperText: 'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
-                      hintText: hintText,
-                    ),
-                    items: buttonOptions.map((options) {
-                      return DropdownMenuItem(
-                        value: options,
-                        child: Text(options),
-                      );
-                    }).toList(),
-                    onChanged: (value) => setState(() => optionSelected = value),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('AREA_TEMATICA')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Text('Carregando ...');
+                      } else {
+
+                        return DropdownButtonFormField(
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            helperText:
+                            'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
+                            hintText: hintText,
+                          ),
+                            items: snapshot.data.docs.map((DocumentSnapshot document) {
+                              return DropdownMenuItem<String>(
+                                  child: Text(document['nome']),
+                                value: document['nome'],
+                              );
+                            }).toList(),
+                            onChanged: (currencyValue) {
+                              setState(() {
+                                selectedCurrency = currencyValue;
+                              });
+
+                              debugPrint(currencyValue);
+                            },
+                          value: selectedCurrency,
+                        );
+                      }
+                    },
                   ),
 
                   const SizedBox(height: 30),
 
-                  CampoSelecaoArquivos(
-                      Icons.cloud_upload_rounded,
-                      'Faça o upload de arquivos ',
-                      'AQUI',
-                          () async {
-                            result = await FilePicker.platform.pickFiles(allowMultiple: false);
+                  CampoSelecaoArquivos(Icons.cloud_upload_rounded,
+                      'Faça o upload de arquivos ', 'AQUI', () async {
+                    result = await FilePicker.platform
+                        .pickFiles(allowMultiple: false);
 
-                            if(result != null) {
-                              final file = result.files.first;
-                              //Pega o nome do arquivo selecionado
-                              setState(() => name = PlatformFile(name: file.name, size: file.size));
-                            } else {
-
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(
-                            'Arquivo não selecionado e/ou Falha ao selecionar arquivo',
-                              ),
-                            ));
-
-                            }
-
-
-                          },
-                      styleText,
-                      fileName,
-                      styleTextFile
-                  )
-
-
+                    if (result != null) {
+                      final file = result.files.first;
+                      //Pega o nome do arquivo selecionado
+                      setState(() => name =
+                          PlatformFile(name: file.name, size: file.size));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                          'Arquivo não selecionado e/ou Falha ao selecionar arquivo',
+                        ),
+                      ));
+                    }
+                  }, styleText, fileName, styleTextFile)
                 ],
               ),
             ),
-
             SizedBox(
               height: 40,
               width: double.infinity,
               child: ElevatedButton(
-                  onPressed: (){
-                    setState((){
-                      _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
+                  onPressed: () {
+                    setState(() {
+                      _controladorTitulo.text.isEmpty
+                          ? _valida = true
+                          : _valida = false;
+                      _controladorTempoNecessario.text.isEmpty
+                          ? _valida = true
+                          : _valida = false;
+                      _controladorResumo.text.isEmpty
+                          ? _valida = true
+                          : _valida = false;
+                      _controladorObjetivo.text.isEmpty
+                          ? _valida = true
+                          : _valida = false;
+                      _controladorContrapartida.text.isEmpty
+                          ? _valida = true
+                          : _valida = false;
                       //optionSelected.isEmpty ? _valida = true : _valida = false;
                     });
-                    if(!_valida){
+                    if (!_valida) {
                       _criarDemanda(context);
                     }
-
                   },
-                  child: const Text("CONFIRMAR")
-              ),
+                  child: const Text("CONFIRMAR")),
             ),
           ],
         ),
       ),
     );
-
   }
 
   void _criarDemanda(BuildContext context) async {
     final userDao = Provider.of<UserDao>(context, listen: false);
 
-    CollectionReference propostasFeitas = FirebaseFirestore.instance.collection('Demandas');
+    CollectionReference propostasFeitas =
+        FirebaseFirestore.instance.collection('Demandas');
 
     //Adicionando um novo documento a nossa coleção -> Demandas
-    propostasFeitas.add({
-      'Titulo_proposta': _controladorTitulo.text,
-      'Tempo_Necessario': _controladorTempoNecessario.text,
-      'Resumo': _controladorResumo.text,
-      'Objetivo': _controladorObjetivo.text,
-      'Contrapartida': _controladorContrapartida.text,
-      'Resutados_Esperados': _controladorResutadosEsperados.text,
-      'Area_Tematica': optionSelected,
-      'userID': userDao.userId(),
-    })
-        .then((value) => debugPrint("Sua proposta foi registrada no banco de dados"))
-        .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
+    propostasFeitas
+        .add({
+          'Titulo_proposta': _controladorTitulo.text,
+          'Tempo_Necessario': _controladorTempoNecessario.text,
+          'Resumo': _controladorResumo.text,
+          'Objetivo': _controladorObjetivo.text,
+          'Contrapartida': _controladorContrapartida.text,
+          'Resutados_Esperados': _controladorResutadosEsperados.text,
+          'Area_Tematica': selectedCurrency,
+          'userID': userDao.userId(),
+        })
+        .then((value) =>
+            debugPrint("Sua proposta foi registrada no banco de dados"))
+        .catchError((error) =>
+            debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
 
     //Limpando os campos após a criação da proposta
-      _controladorTitulo.text = '';
-      _controladorTempoNecessario.text = '';
-      _controladorResumo.text = '';
-      _controladorObjetivo.text = '';
-      _controladorContrapartida.text = '';
-      _controladorResutadosEsperados.text = '';
+    _controladorTitulo.text = '';
+    _controladorTempoNecessario.text = '';
+    _controladorResumo.text = '';
+    _controladorObjetivo.text = '';
+    _controladorContrapartida.text = '';
+    _controladorResutadosEsperados.text = '';
 
-      //Faz o upload do arquivo selecionado para o Firebase storage
-    if(result != null && result.files.isNotEmpty) {
+    debugPrint(result.files.first.name);
+
+    //Faz o upload do arquivo selecionado para o Firebase storage
+    if (result != null && result.files.isNotEmpty) {
       if (kIsWeb) {
-        _uploadFile(result.files.first.bytes, result.files.first.name, userDao.userId());
+        _uploadFile(result.files.first.bytes, result.files.first.name,
+            userDao.userId());
       } else {
-        _uploadFile(await File(result.files.first.path).readAsBytes(), result.files.first.name, userDao.userId());
+        _uploadFile(await File(result.files.first.path).readAsBytes(),
+            result.files.first.name, userDao.userId());
       }
     }
 
     //SnackBar
-    const SnackBar snackBar = SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
+    const SnackBar snackBar =
+        SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-
   ///Função responsável por fazer o upload do arquivo para o storage
- Future<void> _uploadFile(Uint8List _data, String nameFile, String userId) async {
+  Future<void> _uploadFile(
+      Uint8List _data, String nameFile, String userId) async {
+    CollectionReference _demandas = FirebaseFirestore.instance
+        .collection('Demandas')
+        .doc(userId)
+        .collection('arquivos');
 
-   CollectionReference _demandas = FirebaseFirestore.instance.collection('Demandas').doc(userId).collection('arquivos');
+    firebase_storage.Reference reference =
+        firebase_storage.FirebaseStorage.instance.ref('arquivos/$nameFile');
 
-   firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance
-       .ref('arquivos/$nameFile');
+    ///Mostrar a progressão do upload
+    firebase_storage.TaskSnapshot uploadTask = await reference.putData(_data);
 
-   ///Mostrar a progressão do upload
-   firebase_storage.TaskSnapshot uploadTask = await reference.putData(_data);
+    ///Pega o download url do arquivo
+    String url = await uploadTask.ref.getDownloadURL();
 
-   ///Pega o download url do arquivo
-   String url = await uploadTask.ref.getDownloadURL();
-
-   if (uploadTask.state == firebase_storage.TaskState.success) {
-     print('Arquivo enviado com sucesso!');
-     print('URL do arquivo: $url');
-     print(userId);
-     _demandas.add({'file_url' : url});
-   } else {
-     print(uploadTask.state);
-   }
+    if (uploadTask.state == firebase_storage.TaskState.success) {
+      print('Arquivo enviado com sucesso!');
+      print('URL do arquivo: $url');
+      print(userId);
+      _demandas.add({'file_url': url});
+    } else {
+      print(uploadTask.state);
+    }
   }
-
 }
-
