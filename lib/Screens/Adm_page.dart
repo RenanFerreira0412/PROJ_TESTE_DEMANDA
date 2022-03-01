@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projflutterfirebase/Components/Editor.dart';
+import 'package:projflutterfirebase/Screens/Admin_screen.dart';
 
 class AdmPage extends StatefulWidget {
   const AdmPage({Key key}) : super(key: key);
@@ -61,6 +62,9 @@ class _AdmPageState extends State<AdmPage> {
 
                     if(!_valida){
                       // userDao.login(_emailController.text, _passwordController.text);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return AdminScreen();
+                      }));
                     }
                   },
                   child: Text("ENTRAR", style: GoogleFonts.roboto(textStyle: styleText)),
