@@ -89,76 +89,78 @@ class _AdminScreenState extends State<AdminScreen> {
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _filterController,
-              decoration: InputDecoration(
-                hintText: 'Pesquise por uma área temática',
-                helperText:
-                    'Procure por demandas cadastradas através de sua área temática',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                controller: _filterController,
+                decoration: InputDecoration(
+                  hintText: 'Pesquise por uma área temática',
+                  helperText:
+                      'Procure por demandas cadastradas através de sua área temática',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  fillColor: const Color.fromRGBO(64, 64, 64, 0.4),
                 ),
-                fillColor: const Color.fromRGBO(64, 64, 64, 0.4),
               ),
             ),
-          ),
 
-          ListView.builder(
-                itemCount: _resultsList.length,
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(16.0),
-                itemBuilder: (BuildContext context, int index) {
+            ListView.builder(
+                  itemCount: _resultsList.length,
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(16.0),
+                  itemBuilder: (BuildContext context, int index) {
 
-                  return Container(
-                      margin: const EdgeInsets.only(bottom: 20),
-                      height: 70.0,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                        const BorderRadius.all(Radius.circular(20)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 40,
-                            spreadRadius: 10,
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                          leading: Icon(Icons.assignment_rounded,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary),
-                          textColor: Colors.black,
-                          title: Text(_resultsList[index]['Titulo_proposta']),
-                          subtitle: Text(_resultsList[index]['Tempo_Necessario'],
-                              style: const TextStyle(
-                                  color: Colors.black45)),
-                          trailing: SizedBox(
-                            width: 50,
-                            child: Row(
-                              children: <Widget>[
-                                IconButton(
-                                  icon: Icon(Icons.edit,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary,
-                                      size: 32),
-                                  tooltip: 'Editar proposta',
-                                  onPressed: () {
-                                    debugPrint('consultou a demanda');
-                                  },
-                                ),
-                              ],
+                    return Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        height: 70.0,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                          const BorderRadius.all(Radius.circular(20)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 40,
+                              spreadRadius: 10,
                             ),
-                          )));
-                }),
-        ],
+                          ],
+                        ),
+                        child: ListTile(
+                            leading: Icon(Icons.assignment_rounded,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary),
+                            textColor: Colors.black,
+                            title: Text(_resultsList[index]['Titulo_proposta']),
+                            subtitle: Text(_resultsList[index]['Tempo_Necessario'],
+                                style: const TextStyle(
+                                    color: Colors.black45)),
+                            trailing: SizedBox(
+                              width: 50,
+                              child: Row(
+                                children: <Widget>[
+                                  IconButton(
+                                    icon: Icon(Icons.edit,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        size: 32),
+                                    tooltip: 'Editar proposta',
+                                    onPressed: () {
+                                      debugPrint('consultou a demanda');
+                                    },
+                                  ),
+                                ],
+                              ),
+                            )));
+                  }),
+          ],
+        ),
       ),
     );
   }
