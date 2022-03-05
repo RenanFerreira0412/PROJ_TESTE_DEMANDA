@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:projflutterfirebase/Models/demanda.dart';
 
 class AdminScreen extends StatefulWidget {
   @override
@@ -14,8 +13,6 @@ class _AdminScreenState extends State<AdminScreen> {
   Future resultsLoaded;
   List _allResults = [];
   List _resultsList = [];
-
-  String nomeAreaTematica;
 
   ///Chama a função que verifica qualquer mudança no que foi digitado no TextFild
   @override
@@ -34,29 +31,32 @@ class _AdminScreenState extends State<AdminScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    resultsLoaded = getDemandasDataStreamSnapshots();
+    resultsLoaded = pegaDadosDemandaStreamSnapshots();
   }
 
-  ///Mostra no console o que foi digitado pelo usuário
+  ///Detecta o que foi digitado pelo usuário
   _onSearchChanged() {
     searchResultsList();
   }
 
-
+  ///Função responsável por filtrar as demandas cadastradas pela área temática de cada demanda
   searchResultsList() {
+    //Esse vetor ira armazenar todos os resultados encontrados durante a pesquisa
     var mostrarResultados = [];
 
+    //Caso o usuário tenha digitado alguma coisa no TextField
     if(_filterController.text != "") {
       for(var dataSnapshot in _allResults){
-        dataSnapshot = nomeAreaTematica.toLowerCase();
-        debugPrint(dataSnapshot);
+        //Pega as áreas temáticas de todos os documentos registrados no Firebase
+        var areaTematica = Demandas.fromSnapshot(dataSnapshot).AreaTematica.toLowerCase();
 
-       // if(dataSnapshot.contains(_filterController.text.toLowerCase())) {
-         // mostrarResultados.add(dataSnapshot);
-        // debugPrint('Achou a demanda');
-       // }
+        //Caso o usuário tenha pesquisado por uma área existente, será apresentado todas as demandas registradas com essa área temática
+       if(areaTematica.contains(_filterController.text.toLowerCase())) {
+         //Adiciona as demandas encontradas ao vetor mostrarResultados
+         mostrarResultados.add(dataSnapshot);
+        }
       }
-
+      //Caso contrário, será apresentado o vetor que contém todas as demandas cadastradas no banco do Firebase
     } else {
       mostrarResultados = List.from(_allResults);
     }
@@ -66,19 +66,19 @@ class _AdminScreenState extends State<AdminScreen> {
     });
   }
 
-  ///Lista que faz referência a coleção e seus documentos
-  getDemandasDataStreamSnapshots() async {
-    List<QueryDocumentSnapshot> documentList = (await FirebaseFirestore.instance
+  ///Função que pega os documentos da coleção Demandas e passa para uma lista
+  pegaDadosDemandaStreamSnapshots() async {
+    List<QueryDocumentSnapshot> listaDeDocumentos = (await FirebaseFirestore.instance
             .collection("Demandas")
             .get())
         .docs;
 
     setState(() {
-      _allResults = documentList;
+      _allResults = listaDeDocumentos;
     });
 
+    //Chama a função que traz os resultados da pesquisa feita
     searchResultsList();
-    return "complete";
   }
 
   @override
@@ -95,13 +95,15 @@ class _AdminScreenState extends State<AdminScreen> {
             padding: const EdgeInsets.all(16),
             child: TextField(
               controller: _filterController,
-              decoration: const InputDecoration(
-                hintText: 'Pesquisar pela área temática',
+              decoration: InputDecoration(
+                hintText: 'Pesquise por uma área temática',
                 helperText:
                     'Procure por demandas cadastradas através de sua área temática',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-                fillColor: Color.fromRGBO(64, 64, 64, 0.4),
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                fillColor: const Color.fromRGBO(64, 64, 64, 0.4),
               ),
             ),
           ),
@@ -111,8 +113,6 @@ class _AdminScreenState extends State<AdminScreen> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(16.0),
                 itemBuilder: (BuildContext context, int index) {
-
-                  nomeAreaTematica = _resultsList[index]['Area_Tematica'];
 
                   return Container(
                       margin: const EdgeInsets.only(bottom: 20),
@@ -158,124 +158,9 @@ class _AdminScreenState extends State<AdminScreen> {
                             ),
                           )));
                 }),
-
-
-          //AdminScreenItens(_filterController)
         ],
       ),
     );
   }
 }
 
-class AdminScreenItens extends StatefulWidget {
-  final TextEditingController _filterController;
-
-  const AdminScreenItens(this._filterController);
-
-  @override
-  State<AdminScreenItens> createState() => _AdminScreenItensState();
-}
-
-class _AdminScreenItensState extends State<AdminScreenItens> {
-  @override
-  Widget build(BuildContext context) {
-    //Referência a coleção Demandas
-
-    final Stream<QuerySnapshot> propostasCadastradas = FirebaseFirestore
-        .instance
-        .collection('Demandas')
-        .where('Area_Tematica', isEqualTo: widget._filterController.text)
-        .snapshots();
-
-    return StreamBuilder<QuerySnapshot>(
-        stream: propostasCadastradas,
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(
-              child: Text('Algo não deu certo !'),
-            );
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: SpinKitFadingCircle(color: Colors.green[900], size: 120),
-            );
-          }
-
-          final data = snapshot.requireData;
-
-          return AnimationLimiter(
-            child: ListView.builder(
-                itemCount: data.size,
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(16.0),
-                itemBuilder: (context, index) {
-                  //Pegando as informações dos documentos do firebase da coleção Demandas
-                  final infoTitulo = data.docs[index]['Titulo_proposta'];
-                  final infoTempo = data.docs[index]['Tempo_Necessario'];
-                  //final infoResumo = data.docs[index]['Resumo'];
-                  //final infoObjetivo = data.docs[index]['Objetivo'];
-                  //final infoContrapartida = data.docs[index]['Contrapartida'];
-                  // final infoResutadosEsperados = data
-                  //.docs[index]['Resutados_Esperados'];
-                  // final updateDados = snapshot.data.docs[index];
-
-                  return AnimationConfiguration.staggeredList(
-                      position: index,
-                      delay: const Duration(milliseconds: 100),
-                      child: SlideAnimation(
-                        duration: const Duration(milliseconds: 2500),
-                        curve: Curves.fastLinearToSlowEaseIn,
-                        child: FadeInAnimation(
-                          curve: Curves.fastLinearToSlowEaseIn,
-                          duration: const Duration(milliseconds: 2500),
-                          child: Container(
-                              margin: const EdgeInsets.only(bottom: 20),
-                              height: 70.0,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(20)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 40,
-                                    spreadRadius: 10,
-                                  ),
-                                ],
-                              ),
-                              child: ListTile(
-                                  leading: Icon(Icons.assignment_rounded,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
-                                  textColor: Colors.black,
-                                  title: Text(infoTitulo),
-                                  subtitle: Text(infoTempo,
-                                      style: const TextStyle(
-                                          color: Colors.black45)),
-                                  trailing: SizedBox(
-                                    width: 50,
-                                    child: Row(
-                                      children: <Widget>[
-                                        IconButton(
-                                          icon: Icon(Icons.edit,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                              size: 32),
-                                          tooltip: 'Editar proposta',
-                                          onPressed: () {
-                                            debugPrint('consultou a demanda');
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ))),
-                        ),
-                      ));
-                }),
-          );
-        });
-  }
-}

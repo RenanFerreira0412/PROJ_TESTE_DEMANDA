@@ -57,7 +57,7 @@ class FormDemandaState extends State<FormDemanda> {
       appBar: AppBar(
         title: const Text('Formulário de Cadastro'),
         centerTitle: true,
-        backgroundColor: Colors.green[900],
+        backgroundColor: Theme.of(context).colorScheme.primary,
         bottom: PreferredSize(
             child: Container(
               color: Colors.white,

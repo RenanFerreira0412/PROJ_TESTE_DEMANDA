@@ -34,7 +34,7 @@ class ItemDemanda extends StatelessWidget {
       }
       if (snapshot.connectionState == ConnectionState.waiting) {
         return Center(
-          child: SpinKitFadingCircle(color: Colors.green[900], size: 120),
+          child: SpinKitFadingCircle(color: Theme.of(context).colorScheme.primary, size: 120),
         );
       }
 
@@ -126,7 +126,7 @@ class ItemDemanda extends StatelessWidget {
                           ),
                           child: ListTile(
                               leading: Icon(
-                                  Icons.assignment_rounded, color: Colors.green[900]),
+                                  Icons.assignment_rounded, color: Theme.of(context).colorScheme.primary),
                               textColor: Colors.black,
                               title: Text(infoTitulo),
                               subtitle: Text(infoTempo,
@@ -137,7 +137,7 @@ class ItemDemanda extends StatelessWidget {
                                 child: Row(
                                   children: <Widget>[
                                     IconButton(
-                                      icon: Icon(Icons.edit, color: Colors.green[900], size: 32),
+                                      icon: Icon(Icons.edit, color: Theme.of(context).colorScheme.primary, size: 32),
                                       tooltip: 'Editar proposta',
                                       onPressed: () {
                                         Navigator.push(context,
