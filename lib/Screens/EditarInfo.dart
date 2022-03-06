@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projflutterfirebase/Components/Editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:projflutterfirebase/Screens/lista.dart';
 import 'package:conditional_questions/conditional_questions.dart';
 
 class EditarFormInfo extends StatefulWidget {
@@ -50,62 +49,13 @@ class EditarFormInfoState extends State<EditarFormInfo> {
       appBar: AppBar(
           title: const Text("Atualizar propostas"),
         elevation: 0,
-        actions: [
-          SizedBox(
-            width: 80,
-            child: IconButton (
-              icon: const Icon(Icons.delete, color: Colors.redAccent, size: 32),
-              tooltip: 'Remover proposta',
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Deletar proposta'),
-                      content: const Text('Você deseja deletar esta proposta?'),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                      actions: <Widget> [
-                        TextButton(
-                          onPressed: (){
-                            //Deleting the data from the firebase
-                            debugPrint('Foi deletado a proposta');
-                            widget.updateDados.reference.delete();
-
-                            //Going back to the main page
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return ListaDemanda();
-                            }));
-
-                            //SnackBar
-                            const SnackBar snackBar = SnackBar(content: Text("A proposta foi deletada com sucesso! "));
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          },
-                          child: const Text('Sim'),
-                        ),
-
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            debugPrint('Não foi deletado a proposta');
-                          },
-                          child: const Text('Não'),
-                        ),
-                      ],
-                    );
-                  }
-                );
-              },
-            ),
-          )
-        ],
         bottom: PreferredSize(
             child: Container(
               color: Colors.white,
-              height: 4.0,
+              height: 2.0,
             ),
             preferredSize: const Size.fromHeight(4.0)),
-        backgroundColor: Colors.green[900],
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

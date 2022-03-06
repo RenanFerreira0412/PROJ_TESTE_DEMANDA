@@ -9,11 +9,10 @@ class ListaDemanda extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Propostas criadas"),
-        centerTitle: true,
         bottom: PreferredSize(
             child: Container(
               color: Colors.white,
-              height: 4.0,
+              height: 2,
             ),
             preferredSize: const Size.fromHeight(4.0)),
         backgroundColor: Theme.of(context).colorScheme.primary,

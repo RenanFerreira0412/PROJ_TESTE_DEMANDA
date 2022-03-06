@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:projflutterfirebase/Screens/Auth_page.dart';
-import 'package:projflutterfirebase/Screens/allUsers.dart';
+import 'package:projflutterfirebase/Screens/Login_page.dart';
+import 'package:projflutterfirebase/Screens/Homepage.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:provider/provider.dart';
