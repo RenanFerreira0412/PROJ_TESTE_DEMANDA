@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -21,7 +22,7 @@ class UserDao extends ChangeNotifier {
     return auth.currentUser?.uid;
   }
 
-  String email() {
+  String eserEmail() {
     return auth.currentUser?.email;
   }
   // ImgUsuario.src = user.photoURL ? user.photoURL : 'IMGs/usuarioIMG.png'
@@ -35,14 +36,29 @@ class UserDao extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Método responsável por adicionar um novo usuário na coleção USUARIOS
+  void addUser(String email, String password, String userName, String userNumber) async {
+    //Adicionando um novo usuario a nossa coleção -> Usuários
+    DocumentReference _novoUsuario = await FirebaseFirestore.instance.collection('USUARIOS').add({
+      'id': userId(),
+      'nome': userName,
+      'email': eserEmail(),
+      'telefone': userNumber,
+      'tipo': 'user',
+      'url_photo': '',
+    })
+        .catchError((error) => debugPrint("Ocorreu um erro ao registrar o usuário: $error"));
+  }
+
 
 // TODO: Add signup - Cadastrar no App
-  void signup(String email, String password) async {
+  void signup(String email, String password, String name, String userNumber) async {
     try {
       await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      addUser(email, password, name, userNumber);
       notifyListeners();
       _getUser();
     } on FirebaseAuthException catch (e) {
