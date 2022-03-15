@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:open_file/open_file.dart';
 
 class FormDemanda extends StatefulWidget {
   @override
@@ -162,6 +163,7 @@ class FormDemandaState extends State<FormDemanda> {
 
                     if (result != null) {
                       final file = result.files.first;
+
                       //Pega o nome do arquivo selecionado
                       setState(() => name =
                           PlatformFile(name: file.name, size: file.size));
@@ -214,12 +216,8 @@ class FormDemandaState extends State<FormDemanda> {
   void _criarDemanda(BuildContext context) async {
     final userDao = Provider.of<UserDao>(context, listen: false);
 
-    CollectionReference propostasFeitas =
-        FirebaseFirestore.instance.collection('Demandas');
-
     //Adicionando um novo documento a nossa coleção -> Demandas
-    propostasFeitas
-        .add({
+    DocumentReference propostasFeitas = await FirebaseFirestore.instance.collection('Demandas').add({
           'Titulo_proposta': _controladorTitulo.text,
           'Tempo_Necessario': _controladorTempoNecessario.text,
           'Resumo': _controladorResumo.text,
@@ -229,10 +227,10 @@ class FormDemandaState extends State<FormDemanda> {
           'Area_Tematica': selectedCurrency,
           'userID': userDao.userId(),
         })
-        .then((value) =>
-            debugPrint("Sua proposta foi registrada no banco de dados"))
-        .catchError((error) =>
-            debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
+        .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
+
+    debugPrint("ID da demanda: " + propostasFeitas.id);
+
 
     //Limpando os campos após a criação da proposta
     _controladorTitulo.text = '';
@@ -248,10 +246,10 @@ class FormDemandaState extends State<FormDemanda> {
     if (result != null && result.files.isNotEmpty) {
       if (kIsWeb) {
         _uploadFile(result.files.first.bytes, result.files.first.name,
-            userDao.userId());
+            propostasFeitas.id);
       } else {
         _uploadFile(await File(result.files.first.path).readAsBytes(),
-            result.files.first.name, userDao.userId());
+            result.files.first.name, propostasFeitas.id);
       }
     }
 
@@ -277,6 +275,8 @@ class FormDemandaState extends State<FormDemanda> {
 
     ///Pega o download url do arquivo
     String url = await uploadTask.ref.getDownloadURL();
+
+    OpenFile.open(url);
 
     if (uploadTask.state == firebase_storage.TaskState.success) {
       print('Arquivo enviado com sucesso!');
