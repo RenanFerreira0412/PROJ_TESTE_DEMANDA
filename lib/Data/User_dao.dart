@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+//import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -146,19 +146,28 @@ class UserDao extends ChangeNotifier {
   }
 
   // TODO: Sing In with Facebook
-  void signInWithFacebook() async {
-    try {
-      final LoginResult loginResult = await FacebookAuth.instance.login();
-     // final userData = await FacebookAuth.instance.getUserData();
+  Future<UserCredential> signInWithFacebook() async {
 
-      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken.token);
-      await auth.signInWithCredential(facebookAuthCredential);
+    try {
+      // Create a new provider
+      FacebookAuthProvider facebookProvider = FacebookAuthProvider();
+
+      facebookProvider.addScope('email');
+      facebookProvider.setCustomParameters({
+        'display': 'popup',
+      });
+
+      // Once signed in, return the UserCredential
+      //await auth.signInWithRedirect(facebookProvider);
+      await auth.signInWithPopup(facebookProvider);
+      _getUser();
       notifyListeners();
     } on FirebaseAuthException catch(e) {
       if (e.code == 'account-exists-with-different-credential') {
         debugPrint('erro de autentificação');
       }
     }
+
   }
 
 
