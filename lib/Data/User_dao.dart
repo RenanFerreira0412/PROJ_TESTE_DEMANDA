@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class UserDao extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
@@ -28,7 +28,6 @@ class UserDao extends ChangeNotifier {
 
   String photoURL() {
     return auth.currentUser?.photoURL ?? 'assets/image/logo_user.png';
-    //return auth.currentUser?.photoURL;
   }
 
   _getUser() {
@@ -94,35 +93,63 @@ class UserDao extends ChangeNotifier {
     _getUser();
   }
 
-
 // TODO: Sing In with Google
-  Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+  Future<void> signInWithGoogle() async {
+    if (kIsWeb) {
+      GoogleAuthProvider authProvider = GoogleAuthProvider();
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      try {
+        final UserCredential userCredential =
+        await auth.signInWithPopup(authProvider);
 
-    // Create a new credential
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
+        usuario = userCredential.user;
+        _getUser();
+        notifyListeners();
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    // Once signed in, return the UserCredential
-    await auth.signInWithCredential(credential).then((userCredential) => {
-        user = userCredential
-    });
-    //return await auth.signInWithCredential(credential);
-    _getUser();
-    notifyListeners();
+      final GoogleSignInAccount googleSignInAccount =
+      await googleSignIn.signIn();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        try {
+          final UserCredential userCredential =
+          await auth.signInWithCredential(credential);
+
+          usuario = userCredential.user;
+          _getUser();
+          notifyListeners();
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'account-exists-with-different-credential') {
+            // ...
+          } else if (e.code == 'invalid-credential') {
+            // ...
+          }
+        } catch (e) {
+          // ...
+        }
+      }
+    }
+
+    return usuario;
   }
 
   // TODO: Sing In with Facebook
   void signInWithFacebook() async {
     try {
       final LoginResult loginResult = await FacebookAuth.instance.login();
-      final userData = await FacebookAuth.instance.getUserData();
+     // final userData = await FacebookAuth.instance.getUserData();
 
       final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken.token);
       await auth.signInWithCredential(facebookAuthCredential);
