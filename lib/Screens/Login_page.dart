@@ -135,10 +135,15 @@ class _LoginState extends State<Login> {
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      _emailController.text.isEmpty ? _valida = true : _valida = false;
-                      _passwordController.text.isEmpty ? _valida = true : _valida = false;
-                      _nameController.text.isEmpty ? _valida = true : _valida = false;
-                      _userNumberController.text.isEmpty ? _valida = true : _valida = false;
+                      if(isLogin){
+                        _emailController.text.isEmpty ? _valida = true : _valida = false;
+                        _passwordController.text.isEmpty ? _valida = true : _valida = false;
+                      } else {
+                        _emailController.text.isEmpty ? _valida = true : _valida = false;
+                        _passwordController.text.isEmpty ? _valida = true : _valida = false;
+                        _nameController.text.isEmpty ? _valida = true : _valida = false;
+                        _userNumberController.text.isEmpty ? _valida = true : _valida = false;
+                      }
                     });
 
                     if(!_valida){
