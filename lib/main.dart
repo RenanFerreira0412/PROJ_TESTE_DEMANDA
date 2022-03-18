@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:projflutterfirebase/Models/demanda.dart';
+import 'package:projflutterfirebase/Screens/Admin_screen.dart';
 import 'package:projflutterfirebase/Screens/Login_page.dart';
 import 'package:projflutterfirebase/Screens/Homepage.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: FlexColorScheme.light(scheme: FlexScheme.red).toTheme,
+      theme: FlexColorScheme.light(scheme: FlexScheme.jungle).toTheme,
       darkTheme: FlexColorScheme.dark(scheme: FlexScheme.jungle).toTheme,
       themeMode: ThemeMode.dark,
       home: FutureBuilder(
@@ -45,7 +48,7 @@ class MyApp extends StatelessWidget {
           } else if (snapshot.hasData) {
             return Consumer<UserDao>(builder: (context, userDao, child) {
               if (userDao.isLoggedIn()) {
-                return AllUsersHomePage();
+                return VerificaUser(userId: userDao.userId());
               } else {
                 return const Login();
               }
@@ -60,3 +63,61 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class VerificaUser extends StatefulWidget {
+
+  final String userId;
+
+  const VerificaUser({Key key, this.userId}) : super(key: key);
+
+  @override
+  State<VerificaUser> createState() => _VerificaUserState();
+}
+
+class _VerificaUserState extends State<VerificaUser> {
+  @override
+  Widget build(BuildContext context) {
+
+    final usersRef = FirebaseFirestore.instance.collection('USUARIOS')
+        .where('id', isEqualTo: widget.userId)
+        .withConverter<Users>(
+      fromFirestore: (snapshots, _) => Users.fromJson(snapshots.data()),
+      toFirestore: (users, _) => users.toJson(),
+    );
+
+
+    return StreamBuilder<QuerySnapshot<Users>>(
+      stream: usersRef.snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(snapshot.error.toString()),
+          );
+        }
+
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        //final data = snapshot.requireData;
+
+        return checkRole(snapshot.data, widget.userId);
+
+      });
+  }
+}
+
+Widget checkRole(QuerySnapshot snapshot, String userId) {
+
+  if (snapshot.docs.isEmpty) {
+    return Center(
+      child: Text('no data set in the userId document in firestore '+ userId),
+    );
+  }
+  if (snapshot.docs == 'admin') {
+    return AdminScreen();
+  } else {
+    return AllUsersHomePage();
+  }
+}
+

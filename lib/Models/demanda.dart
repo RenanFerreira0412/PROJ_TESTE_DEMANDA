@@ -42,3 +42,44 @@ class Demandas {
     docId = snapshot.id;
   }
 }
+
+class Users {
+
+  Users(
+      this.userId,
+      this.email,
+      this.tipo,
+      this.userName,
+      this.userPhone,
+      this.userPhoto,
+      );
+
+  Users.fromJson(Map<String, Object> json)
+      : this(
+    json['id'] as String,
+    json['email'] as String,
+    json['tipo'] as String,
+    json['name'] as String,
+    json['telefone'] as String,
+    json['url_photo'] as String,
+  );
+
+  final String userId;
+  final String email;
+  final String tipo;
+  final String userName;
+  final String userPhone;
+  final String userPhoto;
+
+
+  Map<String, Object> toJson() {
+    return {
+      'id': userId,
+      'email': email,
+      'tipo': tipo,
+      'name': userName,
+      'telefone': userPhone,
+      'url_photo': userPhoto,
+    };
+  }
+}
