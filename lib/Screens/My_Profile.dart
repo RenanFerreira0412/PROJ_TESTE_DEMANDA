@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:projflutterfirebase/Models/Data/User_dao.dart';
+import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Screens/userOptions.dart';
 import 'package:provider/provider.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:projflutterfirebase/Models/Data/User_dao.dart';
+import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Screens/My_Profile.dart';
 import 'package:provider/provider.dart';
 

@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:projflutterfirebase/Components/Editor.dart';
 import 'package:projflutterfirebase/Widgets/widget.dart';
 import 'package:provider/provider.dart';
-import 'package:projflutterfirebase/Models/Data/User_dao.dart';
+import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Screens/Adm_page.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
