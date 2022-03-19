@@ -10,6 +10,7 @@ class UserDao extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
   User usuario;
   String errorMessage;
+  String docId;
   UserCredential user;
 
 
@@ -47,7 +48,9 @@ class UserDao extends ChangeNotifier {
       'tipo': 'user',
       'url_photo': '',
     })
-        .catchError((error) => debugPrint("Ocorreu um erro ao registrar o usuário: $error"));
+    .catchError((error) => debugPrint("Ocorreu um erro ao registrar o usuário: $error"));
+
+    docId = _novoUsuario.id;
   }
 
 

@@ -78,46 +78,55 @@ class _VerificaUserState extends State<VerificaUser> {
   @override
   Widget build(BuildContext context) {
 
-    final usersRef = FirebaseFirestore.instance.collection('USUARIOS')
-        .where('id', isEqualTo: widget.userId)
+    final usersRef = FirebaseFirestore.instance.collection('movies')
         .withConverter<Users>(
-      fromFirestore: (snapshots, _) => Users.fromJson(snapshots.data()),
-      toFirestore: (users, _) => users.toJson(),
+      fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
+      toFirestore: (user, _) => user.toJson(),
     );
+
+    ///Função que pega os documentos da coleção USUARIOS e passa para uma lista
+    _pegaDadosUsersStreamSnapshots() async {
+      List<QueryDocumentSnapshot<Users>> users = await usersRef
+          .where('userID', isEqualTo: widget.userId)
+          .get()
+          .then((snapshot) => snapshot.docs);
+
+      return users;
+    }
 
 
     return StreamBuilder<QuerySnapshot<Users>>(
-      stream: usersRef.snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(snapshot.error.toString()),
-          );
-        }
+        stream: usersRef.snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
 
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        //final data = snapshot.requireData;
-
-        return checkRole(snapshot.data, widget.userId);
-
-      });
+          return checkRole(snapshot.data, widget.userId);
+        });
   }
 }
 
 Widget checkRole(QuerySnapshot snapshot, String userId) {
 
   if (snapshot.docs.isEmpty) {
-    return Center(
-      child: Text('no data set in the userId document in firestore '+ userId),
+    return const Center(
+      child: Text('no data set in the userId document in firestore '),
     );
   }
-  if (snapshot.docs == 'admin') {
-    return AdminScreen();
-  } else {
-    return AllUsersHomePage();
+
+  for (var doc in snapshot.docs) {
+    if (doc['tipo'] == 'admin') {
+      return AdminScreen();
+    } else {
+      return AllUsersHomePage();
+    }
   }
 }
 
