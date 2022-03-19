@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-//import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -23,7 +22,7 @@ class UserDao extends ChangeNotifier {
     return auth.currentUser?.uid;
   }
 
-  String eserEmail() {
+  String userEmail() {
     return auth.currentUser?.email;
   }
   // ImgUsuario.src = user.photoURL ? user.photoURL : 'IMGs/usuarioIMG.png'
@@ -43,15 +42,21 @@ class UserDao extends ChangeNotifier {
     DocumentReference _novoUsuario = await FirebaseFirestore.instance.collection('USUARIOS').add({
       'id': userId(),
       'nome': userName,
-      'email': eserEmail(),
+      'email': userEmail(),
       'telefone': userNumber,
       'tipo': 'user',
       'url_photo': '',
     })
     .catchError((error) => debugPrint("Ocorreu um erro ao registrar o usuário: $error"));
 
-    docId = _novoUsuario.id;
+    checkRole(_novoUsuario.id);
   }
+
+  checkRole(String docUserId) {
+    debugPrint(docUserId);
+  }
+
+
 
 
 // TODO: Add signup - Cadastrar no App

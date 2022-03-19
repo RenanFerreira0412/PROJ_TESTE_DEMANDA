@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:projflutterfirebase/Data/User_dao.dart';
+import 'package:projflutterfirebase/Models/Data/User_dao.dart';
 import 'package:projflutterfirebase/Screens/userOptions.dart';
 import 'package:provider/provider.dart';
 
@@ -36,7 +36,7 @@ class MyProfile extends StatelessWidget {
             ],
           ),
 
-          Options(Icons.email, 'Email', userDao.eserEmail(), () {debugPrint('user email');}, Theme.of(context).colorScheme.primary)
+          Options(Icons.email, 'Email', userDao.userEmail(), () {debugPrint('user email');}, Theme.of(context).colorScheme.primary)
 
         ]
       ),
