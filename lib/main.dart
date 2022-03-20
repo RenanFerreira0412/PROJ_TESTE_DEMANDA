@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:projflutterfirebase/Screens/Admin_screen.dart';
 import 'package:projflutterfirebase/Screens/Login_page.dart';
 import 'package:projflutterfirebase/Screens/Homepage.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -28,7 +29,6 @@ class MyApp extends StatelessWidget {
 
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,7 +45,20 @@ class MyApp extends StatelessWidget {
           } else if (snapshot.hasData) {
             return Consumer<UserDao>(builder: (context, userDao, child) {
               if (userDao.isLoggedIn()) {
-                return AllUsersHomePage();
+                //Chama a função que verifica o usuário que logou e passa o id do mesmo
+                userDao.checkUser(userDao.userId());
+
+                //Mostra o tipo de usuário logado(admin ou user)
+                debugPrint(userDao.userType);
+
+                //Verifica o tipo de usuário logado(admin ou user)
+                if(userDao.userType == 'admin'){
+                  debugPrint('É um admin');
+                  return AdminScreen();
+                } else { // Caso contrário, retornará para a página dos usuários comuns
+                  debugPrint('Não é um admin');
+                  return AllUsersHomePage();
+                }
               } else {
                 return const Login();
               }

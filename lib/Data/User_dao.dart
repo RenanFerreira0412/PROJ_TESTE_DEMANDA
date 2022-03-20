@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:projflutterfirebase/Models/demanda.dart';
 
 class UserDao extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
   User usuario;
   String errorMessage;
-  String docId;
   UserCredential user;
+  String userType;
+
 
 
 // TODO: Add helper methods - Métodos de ajuda
@@ -55,9 +57,6 @@ class UserDao extends ChangeNotifier {
   checkRole(String docUserId) {
     debugPrint(docUserId);
   }
-
-
-
 
 // TODO: Add signup - Cadastrar no App
   void signup(String email, String password, String name, String userNumber) async {
@@ -117,6 +116,22 @@ class UserDao extends ChangeNotifier {
     _getUser();
   }
 
+  // TODO: verifica o tipo do usuário logado
+  Future<void> checkUser(String userID) async {
+    final usersRef = FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
+      fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
+      toFirestore: (movie, _) => movie.toJson(),
+    );
+
+    // Pega o documento que possui em seu campo id o valor do id do usuário logado
+    final userId = await usersRef.where('id', isEqualTo: userID).get().then((value) => value.docs);
+
+    //Laço que retorna o tipo de usuário(admin ou user)
+    for (var element in userId) {
+      userType = element.data().tipo;
+    }
+  }
+
 // TODO: Sing In with Google
   Future<void> signInWithGoogle() async {
     if (kIsWeb) {
@@ -130,7 +145,7 @@ class UserDao extends ChangeNotifier {
         _getUser();
         notifyListeners();
       } catch (e) {
-        print(e);
+        debugPrint(e);
       }
     } else {
       final GoogleSignIn googleSignIn = GoogleSignIn();

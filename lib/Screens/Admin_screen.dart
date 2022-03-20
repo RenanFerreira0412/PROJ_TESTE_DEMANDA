@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Models/demanda.dart';
+import 'package:provider/provider.dart';
 
 class AdminScreen extends StatefulWidget {
   @override
@@ -83,11 +85,21 @@ class _AdminScreenState extends State<AdminScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userDao = Provider.of<UserDao>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Propostas registradas pelos usuários"),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
+        actions: [
+          IconButton(
+              onPressed: () {
+                userDao.logout();
+              },
+              icon: const Icon(Icons.logout)
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
