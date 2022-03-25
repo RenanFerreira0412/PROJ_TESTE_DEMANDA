@@ -16,7 +16,7 @@ class Editor extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 15, bottom: 15),
         child: TextField(
           maxLength: qtdCaracteres,
           controller: controlador,
@@ -33,68 +33,6 @@ class Editor extends StatelessWidget {
             fillColor: const Color.fromRGBO(64, 64, 64, 0.4)
           ),
         )
-    );
-  }
-}
-
-class EditorDropdownButton extends StatefulWidget{
-  final TextStyle style;
-  String optionSelected;
-
-  EditorDropdownButton(this.style, this.optionSelected, {Key key}) : super(key: key);
-
-  @override
-  State<EditorDropdownButton> createState() => _EditorDropdownButtonState();
-}
-
-class _EditorDropdownButtonState extends State<EditorDropdownButton> {
-
-  final List<String> buttonOptions = [
-    'Comunicação',
-    'Cultura',
-    'Direitos Humanos e Justiça',
-    'Educação',
-    'Meio Ambiente',
-    'Saúde',
-    'Tecnologia e Produção',
-    ' Trabalho'
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text('Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
-              style: GoogleFonts.cabin(textStyle: widget.style),
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          DropdownButtonFormField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              helperText: 'Qual a área do conhecimento que você acha que mais se aproxima da sua proposta?',
-              hintText: 'Selecione a área temática',
-              fillColor: Color.fromRGBO(64, 64, 64, 0.4),
-              //errorText: widget.valida ? 'Campo obrigatório!' : null,
-            ),
-            items: buttonOptions.map((options) {
-              return DropdownMenuItem(
-                value: options,
-                child: Text(options),
-              );
-            }).toList(),
-            onChanged: (value) => setState(() => widget.optionSelected = value),
-          ),
-        ],
-      ),
     );
   }
 }

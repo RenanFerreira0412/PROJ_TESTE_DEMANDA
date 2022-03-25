@@ -300,7 +300,7 @@ Widget camposExtras(TextEditingController _nameController, TextEditingController
 
       const SizedBox(height: 10),
 
-      EditorAuth(_userNumberController, 'Telefone','Informe um número de contato', const Icon(Icons.lock_outline), _valida, 10, false),
+      EditorAuth(_userNumberController, 'Telefone','Informe um número de contato', const Icon(Icons.phone), _valida, 10, false),
     ],
   );
 }
