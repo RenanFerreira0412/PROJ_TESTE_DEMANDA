@@ -3,34 +3,35 @@ import 'package:projflutterfirebase/Components/Editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_questions/conditional_questions.dart';
 
-class EditarFormInfo extends StatefulWidget {
+class EditarFormulario extends StatefulWidget {
 
-  final String titulo;
+  final String title;
   final String tempo;
-  final String resumo;
-  final String objetivo;
-  final String contrapartida;
-  final String resutadosEsperados;
+  final String topics;
+  final String infoExtra;
+  final String subject;
   final QueryDocumentSnapshot updateDados;
 
-  const EditarFormInfo(this.titulo, this.tempo, this.resumo, this.objetivo, this.contrapartida, this.resutadosEsperados, this.updateDados);
+  const EditarFormulario(this.title, this.tempo, this.topics, this.infoExtra, this.subject, this.updateDados);
 
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return EditarFormInfoState();
+    return EditarFormularioState();
   }
 
 }
 
-class EditarFormInfoState extends State<EditarFormInfo> {
+class EditarFormularioState extends State<EditarFormulario> {
 
-  final TextEditingController _controladorTitulo = TextEditingController();
-  final TextEditingController _controladorTempoNecessario = TextEditingController();
-  final TextEditingController _controladorResumo = TextEditingController();
-  final TextEditingController _controladorObjetivo = TextEditingController();
-  final TextEditingController _controladorContrapartida = TextEditingController();
-  final TextEditingController _controladorResutadosEsperados = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _tempoController = TextEditingController();
+  final TextEditingController _topicsController = TextEditingController();
+  final TextEditingController _infoExtraController = TextEditingController();
+  String selectedCurrency;
+
+
+  String hintText = 'Selecionar disciplina';
 
   bool _valida = false;
 
@@ -38,16 +39,14 @@ class EditarFormInfoState extends State<EditarFormInfo> {
   Widget build(BuildContext context) {
 
     //Retornando os valores para os campos de texto
-    _controladorTitulo.text = widget.titulo;
-    _controladorTempoNecessario.text = widget.tempo;
-    _controladorResumo.text = widget.resumo;
-    _controladorObjetivo.text = widget.objetivo;
-    _controladorContrapartida.text = widget.contrapartida;
-    _controladorResutadosEsperados.text = widget.resutadosEsperados;
+    _titleController.text = widget.title;
+    _tempoController.text = widget.tempo;
+    _topicsController.text = widget.topics;
+    _infoExtraController.text = widget.infoExtra;
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text("Atualizar propostas"),
+          title: const Text("Atualizar Atividade"),
         elevation: 0,
         bottom: PreferredSize(
             child: Container(
@@ -58,28 +57,63 @@ class EditarFormInfoState extends State<EditarFormInfo> {
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(14.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
 
-            Editor(_controladorTitulo, "Título da proposta", "Título da Proposta", 1, _valida, 150),
+            Editor(_titleController, "Título da atividade", "Título da Proposta/Trabalho", 1, _valida, 150),
 
-            Editor(_controladorTempoNecessario, "Informe o tempo necessário", "Número de meses para ser realizada", 1, _valida, 150),
+            Row(
+              children: [
+                Expanded(
+                    child: Editor(_tempoController, "Informe o tempo necessário", "Número de meses/dias para ser realizada", 1, _valida, 150)),
 
-            Editor(_controladorResumo, "Faça uma breve descrição da sua proposta",
-                "Explique da melhor forma que conseguir sobre o que se trata a proposta", 5, _valida, 600),
+                const SizedBox(width: 5),
 
-            Editor(_controladorObjetivo, "Descreva os objetivos que você espera serem atendidos",
-                "Coloque em forma de tópicos os objetivos da proposta", 5, _valida, 600),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('AREA_TEMATICA').snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Text('Carregando ...');
+                    } else {
 
-            Editor(_controladorContrapartida, "Quais recursos a equipe dispõe para a execução da proposta?",
-                "Descreva quais recursos estão disponíveis para a execução da proposta, financeiros, humanos, estrutura, etc", 5, _valida, 600),
+                      return Expanded(
+                        child: DropdownButtonFormField(
+                          isExpanded: true,
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            helperText:
+                            'Selecione a disciplina desse trabalho',
+                            hintText: hintText,
+                          ),
+                          items: snapshot.data.docs.map((DocumentSnapshot document) {
+                            return DropdownMenuItem<String>(
+                              child: Text(document['nome']),
+                              value: document['nome'],
+                            );
+                          }).toList(),
+                          onChanged: (currencyValue) {
+                            setState(() {
+                              selectedCurrency = currencyValue;
+                            });
 
-            Editor(_controladorResutadosEsperados, "Quais os resultados esperados?  ",
-                "Descreva os resultados esperados", 5, false, 600),
+                            debugPrint(currencyValue);
+                          },
+                          value: selectedCurrency,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
 
+            Editor(_topicsController, "Tópicos sobre a atividade", "Explique melhor sobre a realização dessa atividade", 5, _valida, 500),
 
+            Editor(_infoExtraController, "Informações extras", "Coloque informações extras sobre a sua atividade", 5, false, 500),
+
+            const SizedBox(height: 10),
 
 
             SizedBox(
@@ -88,14 +122,13 @@ class EditarFormInfoState extends State<EditarFormInfo> {
               child: ElevatedButton(
                   onPressed: (){
                     setState((){
-                      _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorContrapartida.text.isEmpty ? _valida = true : _valida = false;
+                      _titleController.text.isEmpty ? _valida = true : _valida = false;
+                      _tempoController.text.isEmpty ? _valida = true : _valida = false;
+                      _topicsController.text.isEmpty ? _valida = true : _valida = false;
+                      _infoExtraController.text.isEmpty ? _valida = true : _valida = false;
                     });
                     if(!_valida){
-                      _criarDemanda(context);
+                      _updateActivity(context);
                     }
                   },
                   child: const Text("SALVAR MUDANÇAS")
@@ -108,26 +141,24 @@ class EditarFormInfoState extends State<EditarFormInfo> {
 
   }
 
-  void _criarDemanda(BuildContext context) {
-
-    //Atualiza as propostas já cadastradas pelo usuário
+  void _updateActivity(BuildContext context) {
+    //Atualiza as atividade já cadastradas pelo usuário
     widget.updateDados
         .reference
         .update({
-      'Titulo_proposta': _controladorTitulo.text,
-      'Tempo_Necessario': _controladorTempoNecessario.text,
-      'Resumo': _controladorResumo.text,
-      'Objetivo': _controladorObjetivo.text,
-      'Contrapartida': _controladorContrapartida.text,
-      'Resutados_Esperados': _controladorResutadosEsperados.text
-    }).then((value) => debugPrint("Sua proposta foi atualizada no banco de dados"))
-        .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
+      'title': _titleController.text,
+      'tempo': _tempoController.text,
+      'topics': _topicsController.text,
+      'infoExtra': _infoExtraController.text,
+      'subject': selectedCurrency,
+    }).then((value) => debugPrint("Sua atividade foi atualizada no banco de dados"))
+        .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua atividade: $error"));
 
-    //Retorna para a página com as demandas listadas
+    //Retorna para a página com as atividade listadas
     Navigator.pop(context);
 
     //SnackBar
-    const SnackBar snackBar = SnackBar(content: Text("A demanda foi editada com sucesso! "));
+    const SnackBar snackBar = SnackBar(content: Text("Atividade editada com sucesso! "));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
   }

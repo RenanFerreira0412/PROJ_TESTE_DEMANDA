@@ -8,25 +8,22 @@ import 'package:projflutterfirebase/Screens/EditarInfo.dart';
 import 'package:projflutterfirebase/Screens/Homepage.dart';
 import 'package:provider/provider.dart';
 
-class ItemDemanda extends StatefulWidget {
+class ItemAtividade extends StatefulWidget {
+  const ItemAtividade({Key key}) : super(key: key);
+
   @override
-  State<ItemDemanda> createState() => _ItemDemandaState();
+  State<ItemAtividade> createState() => _ItemAtividadeState();
 }
 
-class _ItemDemandaState extends State<ItemDemanda> {
+class _ItemAtividadeState extends State<ItemAtividade> {
   final style = const TextStyle(fontSize: 20, fontWeight: FontWeight.w200);
 
   @override
   Widget build(BuildContext context) {
     final userDao = Provider.of<UserDao>(context, listen: false);
 
-    final Stream<QuerySnapshot> propostasFeitas = FirebaseFirestore.instance
-        .collection('Demandas')
-        .where('userID', isEqualTo: userDao.userId())
-        .snapshots();
-
     return StreamBuilder<QuerySnapshot>(
-      stream: propostasFeitas,
+      stream: ActivityRef().activityRef.where('userId', isEqualTo: userDao.userId()).snapshots(),
       builder: (
         BuildContext context,
         AsyncSnapshot<QuerySnapshot> snapshot,
@@ -46,66 +43,18 @@ class _ItemDemandaState extends State<ItemDemanda> {
         final data = snapshot.requireData;
 
         if (data.size == 0) {
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                DottedBorder(
-                  borderType: BorderType.RRect,
-                  radius: const Radius.circular(12),
-                  color: const Color.fromRGBO(125, 155, 118, 0.6),
-                  dashPattern: const [10, 5],
-                  child: ClipRRect(
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(12)),
-                      child: Container(
-                        height: 200,
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('SEM DEMANDAS CADASTRADAS',
-                                style: GoogleFonts.cabin(textStyle: style)),
-                            const SizedBox(height: 10),
-                            const Text(
-                                'Toque para poder cadastrar sua primeira propostas'),
-                            const SizedBox(height: 10),
-                            ElevatedButton(
-                                onPressed: () {
-                                  debugPrint('Navegou para o formulário');
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            AllUsersHomePage(),
-                                      ));
-                                },
-                                child: const Text('Cadastrar proposta'))
-                          ],
-                        ),
-                      )
-
-                  ),
-                ),
-              ],
-
-              ),
-          );
+          return messageNoActivity(context, style);
         } else {
           return ListView.builder(
               itemCount: data.size,
               itemBuilder: (context, index) {
                 //Pegando as informações dos documentos do firebase da coleção Demandas
-                final infoTitulo = data.docs[index]['Titulo_proposta'];
-                final infoTempo = data.docs[index]['Tempo_Necessario'];
-                final infoResumo = data.docs[index]['Resumo'];
-                final infoObjetivo = data.docs[index]['Objetivo'];
-                final infoContrapartida = data.docs[index]['Contrapartida'];
-                final infoResutadosEsperados =
-                    data.docs[index]['Resutados_Esperados'];
+
+                final infoTitle = data.docs[index]['title'];
+                final infoTempo = data.docs[index]['tempo'];
+                final infoTopics = data.docs[index]['topics'];
+                final infoExtra = data.docs[index]['infoExtra'];
+                final infoSubject = data.docs[index]['subject'];
                 final updateDados = snapshot.data.docs[index];
 
                 return Dismissible(
@@ -135,22 +84,19 @@ class _ItemDemandaState extends State<ItemDemanda> {
                             bottom: BorderSide(width: 1, color: Colors.grey)),
                       ),
                       child: ListTile(
-                        leading: Icon(Icons.assignment_rounded,
-                            color: Theme.of(context).colorScheme.primary),
+                        leading: Icon(Icons.assignment_rounded, color: Theme.of(context).colorScheme.primary),
                         textColor: Colors.white,
-                        title: Text(infoTitulo),
-                        subtitle: Text(infoTempo,
-                            style: const TextStyle(color: Colors.grey)),
+                        title: Text(infoTitle),
+                        subtitle: Text(infoTempo, style: const TextStyle(color: Colors.grey)),
                       ),
                     ),
                     confirmDismiss: (direction) => alertDialog(
                         direction,
-                        infoTitulo,
+                        infoTitle,
                         infoTempo,
-                        infoResumo,
-                        infoObjetivo,
-                        infoContrapartida,
-                        infoResutadosEsperados,
+                        infoTopics,
+                        infoExtra,
+                        infoSubject,
                         updateDados));
               });
         }
@@ -159,8 +105,7 @@ class _ItemDemandaState extends State<ItemDemanda> {
   }
 
   ///Método que será chamado quando o usuário deslizar para um dos lados do card
-  Future<bool> alertDialog(DismissDirection direction, String titulo, tempo,
-      resumo, objetivo, contrapartida, resutadosEsperados, updateDados) async {
+  Future<bool> alertDialog(DismissDirection direction, String title, tempo, topics, infoExtra, infoSubject, updateDados) async {
     String action;
 
     if (direction == DismissDirection.startToEnd) {
@@ -180,7 +125,7 @@ class _ItemDemandaState extends State<ItemDemanda> {
                 TextButton(
                   onPressed: (){
                     //Deletando o documento do banco de dados
-                    debugPrint('Foi deletado a proposta');
+                    debugPrint('A atividade foi deletada');
                     updateDados.reference.delete();
 
                     //Navegando de volta para a página da lista de propostas
@@ -196,7 +141,7 @@ class _ItemDemandaState extends State<ItemDemanda> {
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(false);
-                    debugPrint('Não foi deletado a proposta');
+                    debugPrint('A atividade não foi deletada');
                   },
                   child: const Text('Não'),
                 ),
@@ -212,9 +157,58 @@ class _ItemDemandaState extends State<ItemDemanda> {
 
       //Navegar para a tela de edição de demandas
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return EditarFormInfo(titulo, tempo, resumo, objetivo, contrapartida,
-            resutadosEsperados, updateDados);
+        return EditarFormulario(title, tempo, topics, infoExtra, infoSubject, updateDados);
       }));
     }
   }
+}
+
+
+Widget messageNoActivity(BuildContext context, TextStyle style) {
+  return Padding(
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        DottedBorder(
+          borderType: BorderType.RRect,
+          radius: const Radius.circular(12),
+          color: const Color.fromRGBO(125, 155, 118, 0.6),
+          dashPattern: const [10, 5],
+          child: ClipRRect(
+              borderRadius:
+              const BorderRadius.all(Radius.circular(12)),
+              child: Container(
+                height: 200,
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('SEM DEMANDAS CADASTRADAS',
+                        style: GoogleFonts.cabin(textStyle: style)),
+                    const SizedBox(height: 10),
+                    const Text(
+                        'Toque para poder cadastrar sua primeira propostas'),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                        onPressed: () {
+                          debugPrint('Navegou para o formulário');
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePageUsers()));
+                        },
+                        child: const Text('Cadastrar proposta'))
+                  ],
+                ),
+              )
+
+          ),
+        ),
+      ],
+
+    ),
+  );
 }

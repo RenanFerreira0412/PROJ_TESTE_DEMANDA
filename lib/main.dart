@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
                   return AdminScreen();
                 } else { // Caso contrário, retornará para a página dos usuários comuns
                   debugPrint('Não é um admin');
-                  return AllUsersHomePage();
+                  return const HomePageUsers();
                 }
               } else {
                 return const Login();

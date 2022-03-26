@@ -1,10 +1,12 @@
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:projflutterfirebase/Models/demanda.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class UserDao extends ChangeNotifier {
   final auth = FirebaseAuth.instance;
@@ -208,11 +210,68 @@ class UserDao extends ChangeNotifier {
     }
 
   }
-
-
-
 }
 
+
+class ActivityRef {
+
+  final activityRef = FirebaseFirestore.instance.collection('ATIVIDADES').withConverter<SchoolActivity>(
+    fromFirestore: (snapshot, _) => SchoolActivity.fromJson(snapshot.data()),
+    toFirestore: (movie, _) => movie.toJson(),
+  );
+
+  String docId;
+
+  Future<void> addActivity(
+      String title,
+      String tempo,
+      String topics,
+      String infoExtra,
+      String subject,
+      String userID) async {
+    // Add an activity to firebase
+    await activityRef.add(
+        SchoolActivity(
+            title,
+            tempo,
+            topics,
+            infoExtra,
+            subject,
+            userID
+        )
+    )
+        .then((value) => docId = value.id)
+        .catchError((error) => "Ocorreu um erro ao registrar sua atividade: $error");
+
+    //Mostra o id da atividade
+    debugPrint(docId);
+
+    uploadFile(docId, null, null);
+  }
+
+  Future<void> uploadFile([String docId, Uint8List _data, String nameFile]) async {
+    CollectionReference _activity = FirebaseFirestore.instance.collection('ATIVIDADES').doc(docId).collection('arquivos');
+
+    firebase_storage.Reference reference = firebase_storage.FirebaseStorage.instance.ref('files/$nameFile');
+
+    ///Mostrar a progressão do upload
+    firebase_storage.TaskSnapshot uploadTask = await reference.putData(_data);
+
+    ///Pega o download url do arquivo
+    String url = await uploadTask.ref.getDownloadURL();
+
+    if (uploadTask.state == firebase_storage.TaskState.success) {
+      debugPrint('Arquivo enviado com sucesso!');
+      debugPrint('URL do arquivo: $url');
+      debugPrint(docId);
+      _activity.add({'file_url': url});
+    } else {
+      if (kDebugMode) {
+        print(uploadTask.state);
+      }
+    }
+  }
+}
 
 
 

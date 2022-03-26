@@ -51,9 +51,6 @@ class EditorAuth extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    // Size size = MediaQuery.of(context).size;
-
     return TextField(
           obscureText: verdadeOuFalso,
           controller: controlador,

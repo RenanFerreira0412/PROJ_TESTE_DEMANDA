@@ -4,13 +4,15 @@ import 'package:projflutterfirebase/Screens/lista.dart';
 import 'package:projflutterfirebase/Screens/userOptions.dart';
 
 
-class AllUsersHomePage extends StatefulWidget{
+class HomePageUsers extends StatefulWidget{
+  const HomePageUsers({Key key}) : super(key: key);
+
 
   @override
-  State<AllUsersHomePage> createState() => _AllUsersHomePageState();
+  State<HomePageUsers> createState() => _HomePageUsersState();
 }
 
-class _AllUsersHomePageState extends State<AllUsersHomePage> {
+class _HomePageUsersState extends State<HomePageUsers> {
 
   int paginaAtual = 0;
   PageController pc;
@@ -34,7 +36,7 @@ class _AllUsersHomePageState extends State<AllUsersHomePage> {
         controller: pc,
         children: [
           FormDemanda(),
-          ListaDemanda(),
+          const ListaAtividade(),
           MoreOptions(),
         ],
         onPageChanged: setPaginaAtual,

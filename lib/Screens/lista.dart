@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:projflutterfirebase/Components/item_demanda.dart';
 
-class ListaDemanda extends StatelessWidget {
+class ListaAtividade extends StatelessWidget {
+  const ListaAtividade({Key key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class ListaDemanda extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
 
-      body: ItemDemanda(),
+      body: const ItemAtividade(),
     );
   }
 }

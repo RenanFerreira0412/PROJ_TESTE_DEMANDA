@@ -1,45 +1,40 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+class SchoolActivity {
 
-class Demandas {
-  String TituloProposta;
-  String TempoNecessario;
-  String Resumo;
-  String Objetivo;
-  String Contrapartida;
-  String ResutadosEsperados;
-  String AreaTematica;
-  String userID;
-  String docId;
-
-  Demandas(
-      this.TituloProposta,
-      this.TempoNecessario,
-      this.Resumo,
-      this.Objetivo,
-      this.Contrapartida,
-      this.ResutadosEsperados,
-      this.AreaTematica,
+  SchoolActivity(
+      this.title,
+      this.tempo,
+      this.topics,
+      this.infoExtra,
+      this.subject,
       this.userID,
-      this.docId);
+      );
 
-  @override
-  String toString() {
-    return "Demanda($TituloProposta, $TituloProposta, $Resumo, $Objetivo, $Contrapartida, $ResutadosEsperados)";
-  }
+  SchoolActivity.fromJson(Map<String, Object> json)
+      : this(
+    json['title'] as String,
+    json['tempo'] as String,
+    json['topics'] as String,
+    json['infoExtra'] as String,
+    json['subject'] as String,
+    json['userId'] as String,
+  );
 
-  ///Método responsável por acessar as informações dos campos dos documentos cadastrados no Firebase
-  Demandas.fromSnapshot(DocumentSnapshot snapshot) {
-    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+  final String title;
+  final String tempo;
+  final String topics;
+  final String infoExtra;
+  final String subject;
+  final String userID;
 
-    TituloProposta = data['Titulo_proposta'];
-    TempoNecessario = data['Tempo_Necessario'];
-    ResutadosEsperados = data['Resultados_Esperados'];
-    Resumo = data['Resumo'];
-    Objetivo = data['Objetivo'];
-    Contrapartida = data['Contrapartida'];
-    AreaTematica = data['Area_Tematica'];
-    userID = data['userID'];
-    docId = snapshot.id;
+  Map<String, Object> toJson() {
+    return {
+      'title': title,
+      'tempo': tempo,
+      'topics': topics,
+      'infoExtra': infoExtra,
+      'subject': subject,
+      'userId': userID,
+    };
   }
 }
 

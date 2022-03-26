@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:path/path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +6,7 @@ import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Components/Editor.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:open_file/open_file.dart';
 
 class FormDemanda extends StatefulWidget {
   @override
@@ -20,10 +17,10 @@ class FormDemanda extends StatefulWidget {
 }
 
 class FormDemandaState extends State<FormDemanda> {
-  final TextEditingController _controladorTitulo = TextEditingController();
-  final TextEditingController _controladorTempoNecessario = TextEditingController();
-  final TextEditingController _controladorResumo = TextEditingController();
-  final TextEditingController _controladorObjetivo = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _tempoController = TextEditingController();
+  final TextEditingController _topicsController = TextEditingController();
+  final TextEditingController _infoExtraController = TextEditingController();
 
   FilePickerResult result;
   PlatformFile name;
@@ -62,19 +59,17 @@ class FormDemandaState extends State<FormDemanda> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Editor(_controladorTitulo, "Título da atividade", "Título da Proposta/Trabalho", 1, _valida, 150),
+            Editor(_titleController, "Título da atividade", "Título da Proposta/Trabalho", 1, _valida, 150),
 
             Row(
               children: [
                 Expanded(
-                    child: Editor(_controladorTempoNecessario, "Informe o tempo necessário", "Número de meses/dias para ser realizada", 1, _valida, 150)),
+                    child: Editor(_tempoController, "Informe o tempo necessário", "Número de meses/dias para ser realizada", 1, _valida, 150)),
 
                 const SizedBox(width: 5),
 
                 StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('AREA_TEMATICA')
-                      .snapshots(),
+                  stream: FirebaseFirestore.instance.collection('AREA_TEMATICA').snapshots(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return const Text('Carregando ...');
@@ -111,9 +106,9 @@ class FormDemandaState extends State<FormDemanda> {
               ],
             ),
 
-            Editor(_controladorResumo, "Tópicos sobre a atividade", "Explique melhor sobre a realização dessa atividade", 5, _valida, 500),
+            Editor(_topicsController, "Tópicos sobre a atividade", "Explique melhor sobre a realização dessa atividade", 5, _valida, 500),
 
-            Editor(_controladorObjetivo, "Informações extras", "Coloque informações extras sobre a sua atividade", 5, false, 500),
+            Editor(_infoExtraController, "Informações extras", "Coloque informações extras sobre a sua atividade", 5, false, 500),
 
             const SizedBox(height: 10),
 
@@ -149,14 +144,14 @@ class FormDemandaState extends State<FormDemanda> {
               child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      _controladorTitulo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorTempoNecessario.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorResumo.text.isEmpty ? _valida = true : _valida = false;
-                      _controladorObjetivo.text.isEmpty ? _valida = true : _valida = false;
+                      _titleController.text.isEmpty ? _valida = true : _valida = false;
+                      _tempoController.text.isEmpty ? _valida = true : _valida = false;
+                      _topicsController.text.isEmpty ? _valida = true : _valida = false;
+                      _infoExtraController.text.isEmpty ? _valida = true : _valida = false;
                       //optionSelected.isEmpty ? _valida = true : _valida = false;
                     });
                     if (!_valida) {
-                      _criarDemanda(context);
+                      _criarAtividade(context);
                     }
                   },
                   child: const Text("CONFIRMAR")),
@@ -167,74 +162,38 @@ class FormDemandaState extends State<FormDemanda> {
     );
   }
 
-  void _criarDemanda(BuildContext context) async {
+  void _criarAtividade(BuildContext context) async {
     final userDao = Provider.of<UserDao>(context, listen: false);
 
-    //Adicionando um novo documento a nossa coleção -> Demandas
-    DocumentReference propostasFeitas = await FirebaseFirestore.instance.collection('Demandas').add({
-          'Titulo_proposta': _controladorTitulo.text,
-          'Tempo_Necessario': _controladorTempoNecessario.text,
-          'Resumo': _controladorResumo.text,
-          'Objetivo': _controladorObjetivo.text,
-          'Area_Tematica': selectedCurrency,
-          'userID': userDao.userId(),
-        })
-        .catchError((error) => debugPrint("Ocorreu um erro ao registrar sua demanda: $error"));
+    //Chama o método da class ActivityRef() que realizará a adição de atividades no Firebase
+    ActivityRef().addActivity(
+        _titleController.text,
+        _tempoController.text,
+        _topicsController.text,
+        _infoExtraController.text,
+        selectedCurrency,
+        userDao.userId());
 
-    debugPrint("ID da demanda: " + propostasFeitas.id);
+    //Limpa os campos após a criação da atividade
+    _titleController.text = '';
+    _tempoController.text = '';
+    _topicsController.text = '';
+    _infoExtraController.text = '';
 
-
-    //Limpando os campos após a criação da proposta
-    _controladorTitulo.text = '';
-    _controladorTempoNecessario.text = '';
-    _controladorResumo.text = '';
-    _controladorObjetivo.text = '';
-
+    //Mostra o nome o arquivo selecionado pelo usuário
     debugPrint(result.files.first.name);
 
     //Faz o upload do arquivo selecionado para o Firebase storage
     if (result != null && result.files.isNotEmpty) {
       if (kIsWeb) {
-        _uploadFile(result.files.first.bytes, result.files.first.name,
-            propostasFeitas.id);
+        ActivityRef().uploadFile(null, result.files.first.bytes, result.files.first.name);
       } else {
-        _uploadFile(await File(result.files.first.path).readAsBytes(),
-            result.files.first.name, propostasFeitas.id);
+        ActivityRef().uploadFile(null, await File(result.files.first.path).readAsBytes(), result.files.first.name);
       }
     }
 
     //SnackBar
-    const SnackBar snackBar =
-        SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
+    const SnackBar snackBar = SnackBar(content: Text("Sua demanda foi criada com sucesso! "));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  ///Função responsável por fazer o upload do arquivo para o storage
-  Future<void> _uploadFile(
-      Uint8List _data, String nameFile, String userId) async {
-    CollectionReference _demandas = FirebaseFirestore.instance
-        .collection('Demandas')
-        .doc(userId)
-        .collection('arquivos');
-
-    firebase_storage.Reference reference =
-        firebase_storage.FirebaseStorage.instance.ref('arquivos/$nameFile');
-
-    ///Mostrar a progressão do upload
-    firebase_storage.TaskSnapshot uploadTask = await reference.putData(_data);
-
-    ///Pega o download url do arquivo
-    String url = await uploadTask.ref.getDownloadURL();
-
-    OpenFile.open(url);
-
-    if (uploadTask.state == firebase_storage.TaskState.success) {
-      print('Arquivo enviado com sucesso!');
-      print('URL do arquivo: $url');
-      print(userId);
-      _demandas.add({'file_url': url});
-    } else {
-      print(uploadTask.state);
-    }
   }
 }

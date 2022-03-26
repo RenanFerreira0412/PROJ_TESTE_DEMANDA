@@ -5,6 +5,8 @@ import 'package:projflutterfirebase/Models/demanda.dart';
 import 'package:provider/provider.dart';
 
 class AdminScreen extends StatefulWidget {
+  const AdminScreen({Key key}) : super(key: key);
+
   @override
   State<AdminScreen> createState() => _AdminScreenState();
 }
@@ -50,7 +52,9 @@ class _AdminScreenState extends State<AdminScreen> {
     if(_filterController.text != "") {
       for(var dataSnapshot in _allResults){
         //Pega as áreas temáticas de todos os documentos registrados no Firebase
-        var areaTematica = Demandas.fromSnapshot(dataSnapshot).AreaTematica.toLowerCase();
+        Map<String, dynamic> data = dataSnapshot.data() as Map<String, dynamic>;
+        var areaTematica = SchoolActivity.fromJson(data).subject.toLowerCase();
+        debugPrint(areaTematica);
 
         //Caso o usuário tenha pesquisado por uma área existente, será apresentado todas as demandas registradas com essa área temática
        if(areaTematica.contains(_filterController.text.toLowerCase())) {
@@ -71,7 +75,7 @@ class _AdminScreenState extends State<AdminScreen> {
   ///Função que pega os documentos da coleção Demandas e passa para uma lista
   pegaDadosDemandaStreamSnapshots() async {
     List<QueryDocumentSnapshot> listaDeDocumentos = (await FirebaseFirestore.instance
-            .collection("Demandas")
+            .collection("ATIVIDADES")
             .get())
         .docs;
 
@@ -148,8 +152,8 @@ class _AdminScreenState extends State<AdminScreen> {
                                     .colorScheme
                                     .primary),
                             textColor: Colors.black,
-                            title: Text(_resultsList[index]['Titulo_proposta']),
-                            subtitle: Text(_resultsList[index]['Tempo_Necessario'],
+                            title: Text(_resultsList[index]['title']),
+                            subtitle: Text(_resultsList[index]['tempo'],
                                 style: const TextStyle(
                                     color: Colors.black45)),
                             trailing: SizedBox(
