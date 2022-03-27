@@ -34,6 +34,7 @@ class _HomePageUsersState extends State<HomePageUsers> {
     return Scaffold(
       body: PageView(
         controller: pc,
+        pageSnapping: false,
         children: [
           FormDemanda(),
           const ListaAtividade(),

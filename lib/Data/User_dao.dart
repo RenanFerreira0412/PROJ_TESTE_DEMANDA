@@ -206,6 +206,7 @@ class UserDao extends ChangeNotifier {
     } on FirebaseAuthException catch(e) {
       if (e.code == 'account-exists-with-different-credential') {
         debugPrint('erro de autentificação');
+
       }
     }
 
@@ -273,6 +274,118 @@ class ActivityRef {
   }
 }
 
+class AuthService extends ChangeNotifier {
+  final auth = FirebaseAuth.instance;
+
+  String errorMessage;
+  String userType;
+
+  final userRef = FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
+    fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
+    toFirestore: (user, _) => user.toJson(),
+  );
+
+  //helper methods to get user information
+  //Get the user id
+  String userId() {
+    return auth.currentUser?.uid;
+  }
+
+  //Get the email from the current user
+  String userEmail() {
+    return auth.currentUser?.email;
+  }
+
+  //Verify if the current user is logged in or not
+  bool isLoggedIn() {
+    return auth.currentUser != null;
+  }
+
+  String photoURL() {
+    return auth.currentUser?.photoURL ?? 'assets/image/logo_user.png';
+  }
+
+  ///create a new account on Firebase
+  Future<void> registration(String userEmail, String name, String phone, String userPassword) async {
+    try {
+      await auth.createUserWithEmailAndPassword(
+          email: userEmail,
+          password: userPassword
+      );
+      notifyListeners();
+      addUser(userEmail, name, phone);
+
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        errorMessage = 'The password provided is too weak.';
+        debugPrint(errorMessage);
+      } else if (e.code == 'email-already-in-use') {
+        errorMessage = 'The account already exists for that email.';
+        debugPrint(errorMessage);
+      }
+    } catch (e) {
+      debugPrint(e);
+    }
+  }
+
+  ///sign-in to an existing account
+  Future<void> signIn(String userEmail, String userPassword) async {
+    try {
+      await auth.signInWithEmailAndPassword(
+          email: userEmail,
+          password: userPassword
+      );
+      notifyListeners();
+      checkUser();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found for that email.';
+        debugPrint(errorMessage);
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided for that user.';
+        debugPrint(errorMessage);
+      }
+    }
+  }
+
+  Future<void> logout() async {
+    await auth.signOut();
+    notifyListeners();
+  }
+
+  ///add user to a collection in firebase
+  Future<void> addUser(String email, String name, String phone) async {
+    await userRef.add(
+      Users(
+          userId(),
+          email,
+          'user',
+          name,
+          phone,
+          '')
+    );
+  }
+
+  ///verify the type of the current user
+  Future<void> checkUser() async {
+    final usersRef = FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
+      fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
+      toFirestore: (movie, _) => movie.toJson(),
+    );
+
+    // Pega o documento que possui em seu campo id o valor do id do usuário logado
+    final docId = await usersRef.where('id', isEqualTo: userId()).get().then((value) => value.docs);
+
+    debugPrint(userId());
+    //Laço que retorna o tipo de usuário(admin ou user)
+    for (var dataSnapshot in docId) {
+      //Map<String, dynamic> data = dataSnapshot.data() as Map<String, dynamic>;
+      //userType = Users.fromJson(data).tipo;
+      userType = dataSnapshot.data().tipo;
+      debugPrint(userType);
+    }
+  }
+}
 
 
 

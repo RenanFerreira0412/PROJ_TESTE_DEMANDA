@@ -5,13 +5,13 @@ import 'package:provider/provider.dart';
 
 class MyProfile extends StatelessWidget {
 
-  UserDao userDao;
+  AuthService userDao;
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
 
-    userDao = Provider.of<UserDao>(context, listen: false);
+    userDao = Provider.of<AuthService>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(

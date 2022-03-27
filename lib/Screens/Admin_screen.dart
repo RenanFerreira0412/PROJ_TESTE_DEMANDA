@@ -89,7 +89,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userDao = Provider.of<UserDao>(context, listen: false);
+    final userDao = Provider.of<AuthService>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(

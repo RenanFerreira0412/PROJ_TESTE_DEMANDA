@@ -9,12 +9,12 @@ class MoreOptions extends StatelessWidget {
 
   final styleTextTitle = const TextStyle(fontSize: 23, fontWeight: FontWeight.bold);
 
-  UserDao userDao;
+  AuthService userDao;
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    userDao = Provider.of<UserDao>(context, listen: false);
+    userDao = Provider.of<AuthService>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(

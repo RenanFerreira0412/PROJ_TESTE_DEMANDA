@@ -20,7 +20,7 @@ class _ItemAtividadeState extends State<ItemAtividade> {
 
   @override
   Widget build(BuildContext context) {
-    final userDao = Provider.of<UserDao>(context, listen: false);
+    final userDao = Provider.of<AuthService>(context, listen: false);
 
     return StreamBuilder<QuerySnapshot>(
       stream: ActivityRef().activityRef.where('userId', isEqualTo: userDao.userId()).snapshots(),
