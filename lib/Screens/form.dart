@@ -163,7 +163,7 @@ class FormDemandaState extends State<FormDemanda> {
   }
 
   void _criarAtividade(BuildContext context) async {
-    final userDao = Provider.of<UserDao>(context, listen: false);
+    final userDao = Provider.of<AuthService>(context, listen: false);
 
     //Chama o método da class ActivityRef() que realizará a adição de atividades no Firebase
     ActivityRef().addActivity(

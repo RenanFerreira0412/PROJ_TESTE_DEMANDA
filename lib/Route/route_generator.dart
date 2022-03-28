@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:projflutterfirebase/Screens/Login.dart';
+import 'package:projflutterfirebase/Screens/Login_page.dart';
+import 'package:projflutterfirebase/Screens/Register_page.dart';
+import 'package:projflutterfirebase/main.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -9,7 +11,7 @@ class RouteGenerator {
       case '/':
         return MaterialPageRoute(builder: (_) => const ManegeStateAuth());
       case '/login':
-        return MaterialPageRoute(builder: (_) => const SignUpPage());
+        return MaterialPageRoute(builder: (_) => const LoginPage());
       case '/register':
       // Validation of correct data type
         return MaterialPageRoute(builder: (_) => const RegisterUser());
