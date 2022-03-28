@@ -54,7 +54,7 @@ class _AuthenticationPagesState extends State<AuthenticationPages> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
-        scrollDirection: Axis.horizontal,
+        pageSnapping: false,
         controller: pc,
         children: [
           SignUpPage(pageController: pc),
