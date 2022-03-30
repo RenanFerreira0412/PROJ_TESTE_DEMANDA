@@ -5,7 +5,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Screens/EditarInfo.dart';
-import 'package:projflutterfirebase/Screens/Homepage.dart';
 import 'package:provider/provider.dart';
 
 class ItemAtividade extends StatefulWidget {
@@ -195,10 +194,7 @@ Widget messageNoActivity(BuildContext context, TextStyle style) {
                     ElevatedButton(
                         onPressed: () {
                           debugPrint('Navegou para o formulário');
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const HomePageUsers()));
+                          Navigator.pushNamed(context, '/formActivity');
                         },
                         child: const Text('Cadastrar proposta'))
                   ],

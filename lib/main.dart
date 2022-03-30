@@ -3,9 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:projflutterfirebase/Route/route_generator.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
-import 'package:projflutterfirebase/Screens/Admin_screen.dart';
-import 'package:projflutterfirebase/Screens/Homepage.dart';
-import 'package:projflutterfirebase/Screens/Login_page.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -52,25 +49,4 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
-}
-
-class ManegeStateAuth extends StatelessWidget {
-  const ManegeStateAuth({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<AuthService>(builder: (context, authService, child) {
-      if (authService.isLoggedIn()) {
-        if(authService.userType == 'admin') {
-          return const AdminScreen();
-        } else {
-          return const HomePageUsers();
-        }
-      } else {
-        return const AuthenticationPages();
-      }
-    },
-    );
-  }
-
 }

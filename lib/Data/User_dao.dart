@@ -2,10 +2,15 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:projflutterfirebase/Models/demanda.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:projflutterfirebase/Screens/Admin_screen.dart';
+import 'package:projflutterfirebase/Screens/Homepage.dart';
+import 'package:projflutterfirebase/Screens/Login_page.dart';
+import 'package:provider/provider.dart';
 
 class ActivityRef {
 
@@ -113,7 +118,7 @@ class AuthService extends ChangeNotifier {
       );
       notifyListeners();
       addUser(userEmail, name, phone);
-
+      checkUser();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         errorMessage = 'A senha fornecida é muito fraca.';
@@ -162,7 +167,7 @@ class AuthService extends ChangeNotifier {
 
   ///add user to a collection in firebase
   Future<void> addUser(String email, String name, String phone) async {
-    await userRef.add(
+    await userRef.doc(userId()).set(
       Users(
           userId(),
           email,
@@ -175,23 +180,19 @@ class AuthService extends ChangeNotifier {
 
   ///verify the type of the current user
   Future<void> checkUser() async {
-    final usersRef = FirebaseFirestore.instance.collection('USUARIOS').withConverter<Users>(
-      fromFirestore: (snapshot, _) => Users.fromJson(snapshot.data()),
-      toFirestore: (movie, _) => movie.toJson(),
-    );
-
     // Pega o documento que possui em seu campo id o valor do id do usuário logado
-    final docId = await usersRef.where('id', isEqualTo: userId()).get().then((value) => value.docs);
+    final docId = await userRef.where('id', isEqualTo: userId()).get().then((value) => value.docs);
 
-    debugPrint(userId());
     //Laço que retorna o tipo de usuário(admin ou user)
     for (var dataSnapshot in docId) {
-      //Map<String, dynamic> data = dataSnapshot.data() as Map<String, dynamic>;
-      //userType = Users.fromJson(data).tipo;
       userType = dataSnapshot.data().tipo;
-      debugPrint(userType);
+      debugPrint(dataSnapshot.id);
+      debugPrint(dataSnapshot.data().email);
+      debugPrint('Esse usuário é do tipo: + $userType' );
     }
   }
+
+
 
 
   ///Sing In with Google
@@ -273,6 +274,67 @@ class AuthService extends ChangeNotifier {
   }
 }
 
+class ManegeAuthState extends StatelessWidget {
+  const ManegeAuthState({Key key}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthService>(builder: (context, authService, child) {
+      if(authService.isLoggedIn()) {
+        return const RoleBasedUI();
+      } else {
+        debugPrint('Não estou logado no app');
+        return const AuthenticationPages();
+      }
+    },
+    );
+  }
+
+}
+
+
+class RoleBasedUI extends StatelessWidget{
+  const RoleBasedUI({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    return StreamBuilder<DocumentSnapshot>(
+      stream: authService.userRef.doc(authService.userId()).snapshots(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: SpinKitFadingCircle(
+                color: Theme.of(context).colorScheme.primary, size: 120),
+          );
+        }
+
+        else if (snapshot.hasData) {
+          return checkRole(snapshot.data);
+        }
+        return const LinearProgressIndicator();
+      },
+    );
+  }
+
+  Widget checkRole(DocumentSnapshot snapshot) {
+    if (snapshot.data == null) {
+      return const Center(
+        child: Text('no data set in the userId document in firestore'),
+      );
+    }
+    if (snapshot.get('tipo') == 'admin') {
+      return const AdminScreen();
+    } else {
+      return const HomePageUsers();
+    }
+  }
+}
 
 

@@ -66,42 +66,6 @@ class MoreOptions extends StatelessWidget {
                   },
                       Theme.of(context).colorScheme.primary
                   ),
-
-                  const SizedBox(height: 10),
-
-                  Options(Icons.logout, 'Sair', 'Desconectar sua conta desse aparelho', () {
-                    debugPrint("Usuário saiu");
-                    showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Sair'),
-                            content: const Text('Tem certeza que deseja desconectar sua conta desse aparelho?'),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                            actions: <Widget> [
-                              TextButton(
-                                onPressed: (){
-                                  debugPrint('O usuário saiu do app');
-                                  Navigator.of(context).pop();
-                                  userDao.logout();
-                                },
-                                child: const Text('SIM'),
-                              ),
-
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('CANCELAR'),
-                              ),
-                            ],
-                          );
-                        }
-                    );
-                  },
-                  Colors.redAccent
-                  )
                 ],
               ),
             )

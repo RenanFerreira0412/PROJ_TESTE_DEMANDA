@@ -135,29 +135,23 @@ class FormDemandaState extends State<FormDemanda> {
                 styleText,
                 fileName,
                 styleTextFile),
-
-            const SizedBox(height: 10),
-
-            SizedBox(
-              height: 40,
-              width: double.infinity,
-              child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _titleController.text.isEmpty ? _valida = true : _valida = false;
-                      _tempoController.text.isEmpty ? _valida = true : _valida = false;
-                      _topicsController.text.isEmpty ? _valida = true : _valida = false;
-                      _infoExtraController.text.isEmpty ? _valida = true : _valida = false;
-                      //optionSelected.isEmpty ? _valida = true : _valida = false;
-                    });
-                    if (!_valida) {
-                      _criarAtividade(context);
-                    }
-                  },
-                  child: const Text("CONFIRMAR")),
-            ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: const Icon(Icons.done, color: Colors.white),
+        onPressed: () {
+          setState(() {
+            _titleController.text.isEmpty ? _valida = true : _valida = false;
+            _tempoController.text.isEmpty ? _valida = true : _valida = false;
+            _topicsController.text.isEmpty ? _valida = true : _valida = false;
+            //optionSelected.isEmpty ? _valida = true : _valida = false;
+          });
+          if (!_valida) {
+            _criarAtividade(context);
+          }
+        },
       ),
     );
   }
