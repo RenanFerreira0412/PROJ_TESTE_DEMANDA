@@ -16,7 +16,7 @@ class ActivityRef {
 
   final activityRef = FirebaseFirestore.instance.collection('ATIVIDADES').withConverter<SchoolActivity>(
     fromFirestore: (snapshot, _) => SchoolActivity.fromJson(snapshot.data()),
-    toFirestore: (movie, _) => movie.toJson(),
+    toFirestore: (activity, _) => activity.toJson(),
   );
 
   String docId;
@@ -330,7 +330,7 @@ class RoleBasedUI extends StatelessWidget{
       );
     }
     if (snapshot.get('tipo') == 'admin') {
-      return const AdminScreen();
+      return const SearchDocs();
     } else {
       return const HomePageUsers();
     }
