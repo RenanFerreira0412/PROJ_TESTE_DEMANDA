@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
 import 'package:projflutterfirebase/Models/demanda.dart';
@@ -7,7 +6,6 @@ import 'package:provider/provider.dart';
 
 class HomePageUsers extends StatefulWidget{
   const HomePageUsers({Key key}) : super(key: key);
-
 
   @override
   State<HomePageUsers> createState() => _HomePageUsersState();
@@ -167,51 +165,39 @@ class SearchBar extends StatefulWidget {
 }
 
 class _SearchBarState extends State<SearchBar> {
-
-  final subjectRef = FirebaseFirestore.instance.collection('AREA_TEMATICA').withConverter<Subject>(
-    fromFirestore: (snapshot, _) => Subject.fromJson(snapshot.data()),
-    toFirestore: (subject, _) => subject.toJson(),
-  );
-
-  String autocompleteSelection;
-  List<String> allResults = [];
-
-  //Pega os dados da coleção AREA_TEMATICA e passa para uma lista
-  dataSnapshot() async {
-    //final _options = FirebaseFirestore.instance.collection("AREA_TEMATICA").snapshots();
-    List<QueryDocumentSnapshot<Subject>> subjects = await subjectRef
-        .get()
-        .then((snapshot) => snapshot.docs);
-
-    /*Map<String, dynamic> data = dataSnapshot.data() as Map<String, dynamic>;
-    var areaTematica = SchoolActivity.fromJson(data).subject.toLowerCase();
-    debugPrint(areaTematica);*/
-
-    for (var element in subjects) {
-      setState(() {
-        allResults = element.get('nome');
-      });
-    }}
-
-  static const List<String> _kOptions = <String>[
-    'aardvark',
-    'bobcat',
-    'chameleon',
+  static final List<AllSubjects> _allResults = [
+    AllSubjects('física', 1),
+    AllSubjects('biologia', 2),
+    AllSubjects('história', 3),
+    AllSubjects('matemática', 4),
+    AllSubjects('inglês', 5),
+    AllSubjects('educação física', 6),
+    AllSubjects('banco de dados', 7),
+    AllSubjects('português', 8),
+    AllSubjects('geografia', 9),
+    AllSubjects('progamação', 10),
+    AllSubjects('química', 11),
+    AllSubjects('sistemas operacionais', 12),
   ];
+
+  static String _displayStringForOption(AllSubjects option) => option.name;
 
   @override
   Widget build(BuildContext context) {
-    return Autocomplete<String>(
+    return Autocomplete<AllSubjects>(
+      displayStringForOption: _displayStringForOption,
       optionsBuilder: (TextEditingValue textEditingValue) {
         if (textEditingValue.text == '') {
-          return const Iterable<String>.empty();
+          return const Iterable<AllSubjects>.empty();
         }
-        return _kOptions.where((String option) {
-          return option.contains(textEditingValue.text.toLowerCase());
+        return _allResults.where((AllSubjects option) {
+          return option
+              .toString()
+              .contains(textEditingValue.text.toLowerCase());
         });
       },
-      onSelected: (String selection) {
-        debugPrint('You just selected $selection');
+      onSelected: (AllSubjects selection) {
+        debugPrint('You just selected ${_displayStringForOption(selection)}');
       },
     );
 

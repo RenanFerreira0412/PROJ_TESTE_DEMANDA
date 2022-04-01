@@ -106,7 +106,7 @@ class AuthService extends ChangeNotifier {
 
   _getUser() async {
     user = auth.currentUser;
-    await auth.setPersistence(Persistence.NONE);
+    await auth;
     notifyListeners();
   }
 
