@@ -104,8 +104,9 @@ class AuthService extends ChangeNotifier {
     return auth.currentUser?.photoURL ?? 'assets/image/logo_user.png';
   }
 
-  _getUser() {
+  _getUser() async {
     user = auth.currentUser;
+    await auth.setPersistence(Persistence.NONE);
     notifyListeners();
   }
 
@@ -119,6 +120,7 @@ class AuthService extends ChangeNotifier {
       notifyListeners();
       addUser(userEmail, name, phone);
       checkUser();
+      _getUser();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         errorMessage = 'A senha fornecida é muito fraca.';
@@ -145,6 +147,7 @@ class AuthService extends ChangeNotifier {
       );
       notifyListeners();
       checkUser();
+      _getUser();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         errorMessage = 'Nenhum usuário foi encontrado com o email fornecido.';
