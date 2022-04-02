@@ -79,6 +79,28 @@ class Users {
   }
 }
 
+
+
+class Subject {
+
+  Subject(
+      this.name,
+      );
+
+  Subject.fromJson(Map<String, Object> json)
+      : this(
+    json['nome'] as String,
+  );
+
+  final String name;
+
+  Map<String, Object> toJson() {
+    return {
+      'nome': name,
+    };
+  }
+}
+
 class AllSubjects {
   final String name;
   final int id;

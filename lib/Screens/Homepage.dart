@@ -1,6 +1,6 @@
+
 import 'package:flutter/material.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
-import 'package:projflutterfirebase/Models/demanda.dart';
 import 'package:provider/provider.dart';
 
 
@@ -113,14 +113,11 @@ class ListTileOptions extends StatelessWidget {
   const ListTileOptions(this.icone, this.title, this.onTap, this.color);
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return ListTile(
+  Widget build(BuildContext context) => ListTile(
         leading: Icon(icone, color: color),
         title: Text(title),
         onTap: onTap
     );
-  }
 
 }
 
@@ -164,20 +161,47 @@ class SearchBar extends StatefulWidget {
   State<SearchBar> createState() => _SearchBarState();
 }
 
+@immutable
+class AllSubjects {
+  const AllSubjects({
+    this.description,
+    this.name,
+  });
+
+  final String description;
+  final String name;
+
+  @override
+  String toString() {
+    return '$name, $description';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is AllSubjects && other.name == name && other.description == description;
+  }
+
+  @override
+  int get hashCode => hashValues(description, name);
+}
+
 class _SearchBarState extends State<SearchBar> {
-  static final List<AllSubjects> _allResults = [
-    AllSubjects('física', 1),
-    AllSubjects('biologia', 2),
-    AllSubjects('história', 3),
-    AllSubjects('matemática', 4),
-    AllSubjects('inglês', 5),
-    AllSubjects('educação física', 6),
-    AllSubjects('banco de dados', 7),
-    AllSubjects('português', 8),
-    AllSubjects('geografia', 9),
-    AllSubjects('progamação', 10),
-    AllSubjects('química', 11),
-    AllSubjects('sistemas operacionais', 12),
+  static final List<AllSubjects> _allResults = <AllSubjects>[
+    const AllSubjects(name: 'física', description: 'matéria básica do ensino médio'),
+    const AllSubjects(name: 'biologia', description: 'matéria básica do ensino médio'),
+    const AllSubjects(name: 'história', description: 'matéria básica do ensino médio'),
+    const AllSubjects(name: 'matemática', description: 'matéria básica do ensino médio'),
+    const AllSubjects(name: 'inglês', description: 'matéria básica do ensino médio'),
+    const AllSubjects(name: 'educação física', description: 'matéria básica do ensino médio'),
+    const AllSubjects(name: 'português', description: 'matéria básica do ensino médio'),
+    const AllSubjects(name: 'geografia', description: 'matéria básica do ensino médio'),
+    const AllSubjects(name: 'química', description: 'matéria básica do ensino médio'),
+    const AllSubjects(name: 'banco de dados', description: 'matéria do curso de informática'),
+    const AllSubjects(name: 'programação', description: 'matéria do curso de informática'),
+    const AllSubjects(name: 'sistemas operacionais', description: 'matéria do curso de informática'),
   ];
 
   static String _displayStringForOption(AllSubjects option) => option.name;
