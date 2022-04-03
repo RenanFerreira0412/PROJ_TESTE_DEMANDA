@@ -1,6 +1,8 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
+import 'package:projflutterfirebase/Models/demanda.dart';
 import 'package:provider/provider.dart';
 
 
@@ -161,69 +163,44 @@ class SearchBar extends StatefulWidget {
   State<SearchBar> createState() => _SearchBarState();
 }
 
-@immutable
-class AllSubjects {
-  const AllSubjects({
-    this.description,
-    this.name,
-  });
-
-  final String description;
-  final String name;
-
-  @override
-  String toString() {
-    return '$name, $description';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (other.runtimeType != runtimeType) {
-      return false;
-    }
-    return other is AllSubjects && other.name == name && other.description == description;
-  }
-
-  @override
-  int get hashCode => hashValues(description, name);
-}
-
 class _SearchBarState extends State<SearchBar> {
-  static final List<AllSubjects> _allResults = <AllSubjects>[
-    const AllSubjects(name: 'física', description: 'matéria básica do ensino médio'),
-    const AllSubjects(name: 'biologia', description: 'matéria básica do ensino médio'),
-    const AllSubjects(name: 'história', description: 'matéria básica do ensino médio'),
-    const AllSubjects(name: 'matemática', description: 'matéria básica do ensino médio'),
-    const AllSubjects(name: 'inglês', description: 'matéria básica do ensino médio'),
-    const AllSubjects(name: 'educação física', description: 'matéria básica do ensino médio'),
-    const AllSubjects(name: 'português', description: 'matéria básica do ensino médio'),
-    const AllSubjects(name: 'geografia', description: 'matéria básica do ensino médio'),
-    const AllSubjects(name: 'química', description: 'matéria básica do ensino médio'),
-    const AllSubjects(name: 'banco de dados', description: 'matéria do curso de informática'),
-    const AllSubjects(name: 'programação', description: 'matéria do curso de informática'),
-    const AllSubjects(name: 'sistemas operacionais', description: 'matéria do curso de informática'),
-  ];
 
-  static String _displayStringForOption(AllSubjects option) => option.name;
+
+  final subjectRef = FirebaseFirestore.instance.collection('AREA_TEMATICA').withConverter<Subject>(
+    fromFirestore: (snapshot, _) => Subject.fromJson(snapshot.data()),
+    toFirestore: (subject, _) => subject.toJson(),
+  );
+
+  static String _displayStringForOption(DocumentSnapshot option) => option['nome'];
+
 
   @override
   Widget build(BuildContext context) {
-    return Autocomplete<AllSubjects>(
-      displayStringForOption: _displayStringForOption,
-      optionsBuilder: (TextEditingValue textEditingValue) {
-        if (textEditingValue.text == '') {
-          return const Iterable<AllSubjects>.empty();
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('AREA_TEMATICA').snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData) {
+          return const Text('Carregando ...');
+        } else {
+          return Autocomplete<DocumentSnapshot>(
+            displayStringForOption: _displayStringForOption,
+            optionsBuilder: (TextEditingValue textEditingValue) {
+              if (textEditingValue.text == '') {
+                return const Iterable<DocumentSnapshot>.empty();
+              }
+              return snapshot.data.docs.where((DocumentSnapshot option) {
+                return option.data().toString().toLowerCase().contains(textEditingValue.text.toLowerCase());
+              });
+            },
+            onSelected: (DocumentSnapshot selection) {
+              debugPrint(
+                  'You just selected ${_displayStringForOption(selection)}');
+            },
+          );
         }
-        return _allResults.where((AllSubjects option) {
-          return option
-              .toString()
-              .contains(textEditingValue.text.toLowerCase());
-        });
-      },
-      onSelected: (AllSubjects selection) {
-        debugPrint('You just selected ${_displayStringForOption(selection)}');
       },
     );
+
 
   }
 }
