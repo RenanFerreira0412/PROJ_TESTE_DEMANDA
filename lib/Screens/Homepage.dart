@@ -1,8 +1,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:projflutterfirebase/Data/User_dao.dart';
-import 'package:projflutterfirebase/Models/demanda.dart';
 import 'package:provider/provider.dart';
 
 
@@ -15,12 +15,72 @@ class HomePageUsers extends StatefulWidget{
 
 class _HomePageUsersState extends State<HomePageUsers> {
 
+  static String _displayStringForOption(DocumentSnapshot option) => option['nome'];
+
+  String valueSelected;
+
+  @override
+  void initState() {
+    super.initState();
+    filteringData();
+  }
+
+  filteringData() {
+    if(valueSelected == null) {
+      final Stream<QuerySnapshot> _activityStream = FirebaseFirestore.instance.collection('ATIVIDADES').snapshots();
+      return AllActivitiesData(stream: _activityStream);
+    } else {
+      final Stream<QuerySnapshot> _filterActivityStream = FirebaseFirestore.instance.collection('ATIVIDADES').where('subject', isEqualTo: valueSelected).snapshots();
+      return AllActivitiesData(stream: _filterActivityStream);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userDao = Provider.of<AuthService>(context, listen: false);
 
     return Scaffold(
-      body: const HomePageContent(),
+      appBar: AppBar(
+        toolbarHeight: 100,
+        title: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('AREA_TEMATICA').snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (!snapshot.hasData) {
+              return const Text('Carregando ...');
+            } else {
+              return Autocomplete<DocumentSnapshot>(
+                displayStringForOption: _displayStringForOption,
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  if (textEditingValue.text == '') {
+                    return const Iterable<DocumentSnapshot>.empty();
+                  }
+                  return snapshot.data.docs.where((DocumentSnapshot option) {
+                    return option.get('nome').toLowerCase().contains(textEditingValue.text.toLowerCase());
+                  });
+                },
+                fieldViewBuilder: fieldViewBuilder,
+                onSelected: (DocumentSnapshot selection) {
+                  debugPrint('You just selected ${_displayStringForOption(selection)}');
+
+                  setState(() {
+                    valueSelected = _displayStringForOption(selection);
+                  });
+
+                  debugPrint(valueSelected);
+
+                },
+              );
+            }
+          },
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            filteringData()
+          ],
+        ),
+      ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -40,33 +100,33 @@ class _HomePageUsersState extends State<HomePageUsers> {
             ),
 
             ListTileOptions(
-                Icons.assignment_rounded,
-                'Formulário',
-                    () {
+                icone: Icons.assignment_rounded,
+                title: 'Formulário',
+                onTap: () {
                   Navigator.pushNamed(context, '/formActivity');
                 },
-                Colors.white),
+                color: Colors.white),
 
             ListTileOptions(
-                Icons.list_alt_rounded,
-                'Minhas Atividades',
-                    () {
+                icone: Icons.list_alt_rounded,
+                title: 'Minhas Atividades',
+                onTap: () {
                   Navigator.pushNamed(context, '/listActivity');
                 },
-                Colors.white),
+                color: Colors.white),
 
             ListTileOptions(
-                Icons.settings,
-                'Configurações',
-                    () {
+                icone: Icons.settings,
+                title: 'Configurações',
+                onTap: () {
                   Navigator.pushNamed(context, '/settings');
                 },
-                Colors.white),
+                color: Colors.white),
 
             ListTileOptions(
-                Icons.logout,
-                'Sair',
-                    () {
+                icone: Icons.logout,
+                title: 'Sair',
+                onTap: () {
                       showDialog(
                           context: context,
                           barrierDismissible: false,
@@ -96,7 +156,7 @@ class _HomePageUsersState extends State<HomePageUsers> {
                           }
                       );
                 },
-                Colors.redAccent),
+                color: Colors.redAccent),
           ],
         ),
       ),
@@ -112,7 +172,8 @@ class ListTileOptions extends StatelessWidget {
   final Function onTap;
   final Color color;
 
-  const ListTileOptions(this.icone, this.title, this.onTap, this.color);
+  const ListTileOptions({Key key, this.icone, this.title, this.onTap, this.color}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) => ListTile(
@@ -123,84 +184,60 @@ class ListTileOptions extends StatelessWidget {
 
 }
 
-
-class HomePageContent extends StatelessWidget {
-  const HomePageContent({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    //final userDao = Provider.of<AuthService>(context, listen: false);
-
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              IconButton(
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  icon: const Icon(Icons.menu_rounded)),
-
-              const SizedBox(width: 10),
-
-              const Expanded(child: SearchBar()),
-            ],
-          ),
-
-
-        ],
-      ),
-    );
-  }
-}
-
-
-class SearchBar extends StatefulWidget {
-  const SearchBar({Key key}) : super(key: key);
-
-  @override
-  State<SearchBar> createState() => _SearchBarState();
-}
-
-class _SearchBarState extends State<SearchBar> {
-
-
-  final subjectRef = FirebaseFirestore.instance.collection('AREA_TEMATICA').withConverter<Subject>(
-    fromFirestore: (snapshot, _) => Subject.fromJson(snapshot.data()),
-    toFirestore: (subject, _) => subject.toJson(),
+Widget fieldViewBuilder(
+    BuildContext context,
+    TextEditingController textEditingController,
+    FocusNode focusNode,
+    VoidCallback onFieldSubmitted) {
+  return TextField(
+    controller: textEditingController,
+    focusNode: focusNode,
+    decoration: const InputDecoration(
+        label: Text('Pesquise pelas disciplinas cadastradas'),
+        border: OutlineInputBorder(),
+    ),
   );
+}
 
-  static String _displayStringForOption(DocumentSnapshot option) => option['nome'];
+class AllActivitiesData extends StatelessWidget {
 
+  final Stream<QuerySnapshot> stream;
+
+  const AllActivitiesData({Key key, this.stream}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('AREA_TEMATICA').snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) {
-          return const Text('Carregando ...');
-        } else {
-          return Autocomplete<DocumentSnapshot>(
-            displayStringForOption: _displayStringForOption,
-            optionsBuilder: (TextEditingValue textEditingValue) {
-              if (textEditingValue.text == '') {
-                return const Iterable<DocumentSnapshot>.empty();
+        stream: stream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('Algo deu errado!'));
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: Text("Carregando dados..."));
+          }
+
+          final data = snapshot.requireData;
+
+          return ListView.builder(
+              itemCount: data.size,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                //Pegando as informações dos documentos do firebase da coleção Activities
+
+                final infoTitle = data.docs[index]['title'];
+                final infoTempo = data.docs[index]['tempo'];
+
+                return ListTile(
+                    leading: const Icon(FontAwesome.file),
+                    title: Text(infoTitle),
+                    subtitle: Text(infoTempo, style: const TextStyle(color: Colors.black45)),
+                    );
               }
-              return snapshot.data.docs.where((DocumentSnapshot option) {
-                return option.data().toString().toLowerCase().contains(textEditingValue.text.toLowerCase());
-              });
-            },
-            onSelected: (DocumentSnapshot selection) {
-              debugPrint(
-                  'You just selected ${_displayStringForOption(selection)}');
-            },
           );
         }
-      },
     );
-
-
   }
+
 }
