@@ -38,6 +38,44 @@ class Editor extends StatelessWidget {
   }
 }
 
+class EditorTextFormField extends StatelessWidget {
+  final TextEditingController controller;
+  final int maxLength;
+  final int lines;
+  final String labelText;
+  final String dica;
+  final bool validaField;
+
+  const EditorTextFormField({Key key, this.controller, this.maxLength, this.lines, this.labelText, this.dica, this.validaField}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 15, bottom: 15),
+      child: TextFormField(
+        controller: controller,
+        maxLength: maxLength,
+        maxLines: lines,
+        decoration: InputDecoration(
+            labelText: labelText,
+            hintText: dica,
+            helperText: dica,
+            border: const OutlineInputBorder(),
+            fillColor: const Color.fromRGBO(64, 64, 64, 0.4)
+        ),
+        validator: validaField ? (value) {
+          if (value == null || value.isEmpty) {
+            return 'Campo Obrigatório!';
+          }
+          return null;
+        }
+         : null,
+      ),
+    );
+  }
+
+}
+
 class EditorAuth extends StatefulWidget {
 
   final TextEditingController controlador;
