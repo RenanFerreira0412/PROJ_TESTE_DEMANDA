@@ -100,13 +100,3 @@ class Subject {
     };
   }
 }
-
-class AllSubjects {
-  final String name;
-  final int id;
-
-  AllSubjects(
-      this.name,
-      this.id
-      );
-}
